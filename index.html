@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102d35">
+  <meta name="description" content="Persoonlijk offline aquariumlogboek">
+  <title>AquaLog</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>AquaLog <span>🐠</span></h1>
+      <p>Mijn aquariumlogboek</p>
+    </div>
+    <div id="syncIndicator" class="status">● Lokaal opgeslagen</div>
+  </header>
+
+  <main>
+    <section id="dashboard" class="page active">
+      <div class="dashboard-heading">
+        <div>
+          <p class="eyebrow">AQUALOG · AQUARIUM OVERZICHT</p>
+          <h2 id="dashboardTitle">Mijn aquarium</h2>
+          <p class="muted">Een helder overzicht van de laatste metingen en activiteit.</p>
+        </div>
+        <span class="live-pill"><i></i> Lokaal opgeslagen</span>
+      </div>
+
+      <div class="cards">
+        <article class="metric">
+          <small><span class="metric-icon cyan">◉</span> Temperatuur</small>
+          <strong id="temperature">-- °C</strong>
+          <span class="metric-caption">Laatste meting</span>
+        </article>
+        <article class="metric">
+          <small><span class="metric-icon violet">◌</span> pH</small>
+          <strong id="ph">--</strong>
+          <span class="metric-caption">Zuurgraad</span>
+        </article>
+        <article class="metric">
+          <small><span class="metric-icon blue">⌁</span> KH</small>
+          <strong id="kh">-- °dKH</strong>
+          <span class="metric-caption">Carbonaathardheid</span>
+        </article>
+        <article class="metric">
+          <small><span class="metric-icon pink">✧</span> NO3</small>
+          <strong id="no3">-- ppm</strong>
+          <span class="metric-caption">Nitraat</span>
+        </article>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="tank-card">
+          <div class="tank-copy">
+            <p class="eyebrow">JOUW AQUARIUM</p>
+            <h3>Een rustige blik<br>op je onderwaterwereld</h3>
+            <p id="lastActivity" class="tank-activity">Nog geen metingen geregistreerd.</p>
+            <button onclick="showPage('metingen')">＋ Nieuwe meting</button>
+          </div>
+          <div class="tank-art" role="img" aria-label="Gestileerde onderwaterwereld met vissen en waterplanten">
+            <span class="tank-glow"></span>
+            <span class="bubble bubble-one"></span><span class="bubble bubble-two"></span>
+            <span class="bubble bubble-three"></span>
+            <span class="fish fish-one"></span><span class="fish fish-two"></span>
+            <span class="plant plant-one"></span><span class="plant plant-two"></span><span class="plant plant-three"></span>
+            <span class="coral"></span>
+            <span class="tank-floor"></span>
+          </div>
+        </article>
+
+        <article class="panel routine-card">
+          <div class="panel-heading"><span class="panel-symbol violet">✦</span><div><p class="eyebrow">DAGELIJKSE ROUTINE</p><h3>Plantenvoeding</h3></div></div>
+          <div class="dose-row"><span class="dose-dot cyan"></span><span>Micro</span><strong id="dashboardMicroDose">17 ml</strong></div>
+          <div class="dose-row"><span class="dose-dot violet"></span><span>Macro</span><strong id="dashboardMacroDose">17 ml</strong></div>
+          <p id="microStockAlert" class="stock-alert" hidden></p>
+          <p id="macroStockAlert" class="stock-alert" hidden></p>
+          <div class="dose-row stock-line"><span>Micro voorraad</span><strong id="microStockSummary">0 ml</strong></div>
+          <small id="microDaysSummary" class="stock-days">--</small>
+          <div class="dose-row stock-line"><span>Macro voorraad</span><strong id="macroStockSummary">0 ml</strong></div>
+          <small id="macroDaysSummary" class="stock-days">--</small>
+          <p class="routine-note">Doseringen worden van de voorraad afgetrokken wanneer je ze registreert.</p>
+          <button class="button-secondary" onclick="showPage('voeding')">Dosering registreren <span>↗</span></button>
+        </article>
+      </div>
+
+      <div class="lower-grid">
+        <article class="panel quick-panel">
+          <div class="panel-heading"><span class="panel-symbol cyan">⌁</span><div><p class="eyebrow">SNEL NAAR</p><h3>Jouw logboek</h3></div></div>
+          <div class="quick-links">
+            <button class="quick-link" onclick="showPage('geschiedenis')"><span class="quick-icon cyan">▤</span><span><strong>Meetgeschiedenis</strong><small>Bekijk eerdere waarden</small></span><b>›</b></button>
+            <button class="quick-link" onclick="showPage('grafieken')"><span class="quick-icon violet">⌁</span><span><strong>Grafieken</strong><small>Volg de ontwikkeling</small></span><b>›</b></button>
+            <button class="quick-link" onclick="showPage('onderhoud')"><span class="quick-icon green">◷</span><span><strong>Onderhoud</strong><small>Bekijk je activiteiten</small></span><b>›</b></button>
+          </div>
+        </article>
+        <article class="panel readiness-panel">
+          <div class="panel-heading"><span class="panel-symbol green">✓</span><div><p class="eyebrow">APP STATUS</p><h3>Klaar voor gebruik</h3></div></div>
+          <div class="readiness-line"><span class="readiness-check">✓</span><span>Offline beschikbaar</span><strong>Actief</strong></div>
+          <div class="readiness-line"><span class="readiness-check">✓</span><span>Lokale gegevensopslag</span><strong>Actief</strong></div>
+          <div class="readiness-line"><span class="readiness-check">✓</span><span>Voorraad en doseerhistorie</span><strong>Actief</strong></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="voeding" class="page">
+      <h2>Plantenvoeding</h2>
+      <p class="muted">Registreer elke dosering. De voorraad wordt automatisch bijgewerkt.</p>
+      <div class="panel stock-overview">
+        <h3>Voorraad nu</h3>
+        <p>Micro: <strong id="dosingMicroStockSummary">0 ml</strong> · <span id="dosingMicroDaysSummary">--</span></p>
+        <p>Macro: <strong id="dosingMacroStockSummary">0 ml</strong> · <span id="dosingMacroDaysSummary">--</span></p>
+      </div>
+      <form id="dosingForm" class="panel">
+        <label>Product
+          <select id="doseProduct"><option value="micro">Micro</option><option value="macro">Macro</option></select>
+        </label>
+        <label>Datum en tijd<input id="doseDate" type="datetime-local" required></label>
+        <label>Hoeveelheid (ml)<input id="doseAmount" type="number" min="0.01" step="0.01" value="17" required></label>
+        <label>Opmerking<textarea id="doseNote" placeholder="Bijvoorbeeld handmatig aangepast"></textarea></label>
+        <button type="submit">Dosering opslaan</button>
+      </form>
+      <h3>Doseerhistorie</h3>
+      <div id="microLastDose" class="muted"></div><div id="macroLastDose" class="muted"></div>
+      <div id="dosingHistory"></div>
+    </section>
+
+    <section id="metingen" class="page">
+      <h2>Waterwaardes meten</h2>
+      <p class="muted">Vul je gemeten waterwaardes in.</p>
+
+      <form id="measurementForm">
+        <label>Datum en tijd</label>
+        <input type="datetime-local" id="date" required>
+
+        <div class="form-grid">
+          <label>Temperatuur (°C)
+            <input type="number" step="0.1" id="mTemp">
+          </label>
+          <label>pH
+            <input type="number" step="0.01" id="mPh">
+          </label>
+          <label>KH (°dKH)
+            <input type="number" step="0.1" id="mKh">
+          </label>
+          <label>GH (°dGH)
+            <input type="number" step="0.1" id="mGh">
+          </label>
+          <label>NO2 (ppm)
+            <input type="number" step="0.01" id="mNo2">
+          </label>
+          <label>NO3 (ppm)
+            <input type="number" step="0.1" id="mNo3">
+          </label>
+          <label>PO4 (ppm)
+            <input type="number" step="0.01" id="mPo4">
+          </label>
+          <label>NH3/NH4 (ppm)
+            <input type="number" step="0.01" id="mNh">
+          </label>
+          <label>Kalium (ppm)
+            <input type="number" step="0.1" id="mK">
+          </label>
+          <label>IJzer (ppm)
+            <input type="number" step="0.01" id="mFe">
+          </label>
+          <label>TDS (ppm)
+            <input type="number" step="1" id="mTds">
+          </label>
+          <label>EC (µS/cm)
+            <input type="number" step="1" id="mEc">
+          </label>
+        </div>
+
+        <label>Opmerkingen</label>
+        <textarea id="notes" placeholder="Bijvoorbeeld: planten gesnoeid, water ververst..."></textarea>
+
+        <button type="submit">Meting opslaan</button>
+      </form>
+    </section>
+
+    <section id="geschiedenis" class="page">
+      <h2>Meetgeschiedenis</h2>
+      <div id="history">
+        <p class="muted">Je hebt nog geen metingen opgeslagen.</p>
+      </div>
+    </section>
+
+    
+<section id="grafieken" class="page">
+  <h2>Waterwaardes analyseren</h2>
+  <p class="muted">Bekijk de ontwikkeling van je aquarium.</p>
+
+  <div class="panel">
+    <label>Kies waterwaarde</label>
+    <select id="chartParameter">
+      <option value="ph">pH</option>
+      <option value="temperature">Temperatuur</option>
+      <option value="kh">KH</option>
+      <option value="gh">GH</option>
+      <option value="no2">NO2</option>
+      <option value="no3">NO3</option>
+      <option value="po4">PO4</option>
+      <option value="nh">NH3/NH4</option>
+      <option value="k">Kalium</option>
+      <option value="fe">IJzer</option>
+      <option value="tds">TDS</option>
+      <option value="ec">EC</option>
+    </select>
+
+    <label>Periode</label>
+    <select id="chartPeriod">
+      <option value="7">Laatste 7 dagen</option>
+      <option value="30" selected>Laatste 30 dagen</option>
+      <option value="90">Laatste 90 dagen</option>
+      <option value="365">Laatste 12 maanden</option>
+      <option value="all">Alle metingen</option>
+    </select>
+
+    <div class="chart-container">
+      <canvas id="waterChart"></canvas>
+    </div>
+    <p id="chartInfo" class="muted">Nog geen gegevens beschikbaar.</p>
+  </div>
+</section>
+
+    <section id="onderhoud" class="page">
+      <h2>Onderhoud</h2>
+      <p class="muted">Houd hier je aquariumonderhoud bij.</p>
+      <form id="maintenanceForm">
+        <label>Datum</label>
+        <input type="date" id="maintenanceDate" required>
+        <label>Soort onderhoud</label>
+        <select id="maintenanceType">
+          <option>Water verversen</option>
+          <option>Filter reinigen</option>
+          <option>Planten snoeien</option>
+          <option>Bodem reinigen</option>
+          <option>Anders</option>
+        </select>
+        <label>Opmerkingen</label>
+        <textarea id="maintenanceNotes"></textarea>
+        <button type="submit">Onderhoud opslaan</button>
+      </form>
+      <div id="maintenanceHistory"></div>
+    </section>
+
+    <section id="instellingen" class="page">
+      <h2>Instellingen</h2>
+      <div class="panel">
+        <h3>Mijn aquarium</h3>
+        <label>Naam aquarium</label>
+        <input id="tankName" value="Mijn aquarium">
+        <label>Gewenste pH</label>
+        <input id="targetPh" type="number" step="0.01" value="6.7">
+        <label>Gewenste temperatuur (°C)</label>
+        <input id="targetTemp" type="number" step="0.1" value="25">
+        <label>Micro dosering (ml per dag)</label>
+        <input id="microDose" type="number" value="17">
+        <label>Macro dosering (ml per dag)</label>
+        <input id="macroDose" type="number" value="17">
+        <label>Micro voorraad (ml)</label>
+        <input id="microStock" type="number" min="0" step="0.01" value="0">
+        <label>Macro voorraad (ml)</label>
+        <input id="macroStock" type="number" min="0" step="0.01" value="0">
+        <label>Waarschuw bij voorraad van (dagen of minder)</label>
+        <input id="lowStockDays" type="number" min="0" step="1" value="7">
+        <button onclick="saveSettings()">Instellingen opslaan</button>
+      </div>
+
+      <div class="panel">
+        <h3>Gegevensbeheer</h3>
+        <button onclick="exportData()">Back-up downloaden</button>
+        <label>Back-up terugzetten</label>
+        <input type="file" id="importFile" accept=".json,application/json">
+        <button onclick="importData()">Back-up importeren</button>
+      </div>
+
+      <div class="panel">
+        <h3>Raspberry Pi synchronisatie</h3>
+        <p class="muted">Optioneel. AquaLog blijft lokaal werken als de Pi offline is. Gebruik straks het HTTPS-adres en de API-sleutel van je Pi.</p>
+        <label>Raspberry Pi API-adres (HTTPS)
+          <input id="syncApiUrl" type="url" inputmode="url" placeholder="https://aqualog.example.ts.net">
+        </label>
+        <label>API-sleutel
+          <input id="syncToken" type="password" autocomplete="new-password" placeholder="Ingesteld op de Raspberry Pi">
+        </label>
+        <div class="sync-actions">
+          <button id="testSyncButton" type="button" class="button-secondary">Verbinding testen</button>
+          <button id="syncNowButton" type="button">Nu synchroniseren</button>
+        </div>
+        <p id="syncStatus" class="muted" role="status" aria-live="polite">Nog niet verbonden.</p>
+        <p class="muted">De API-sleutel blijft op dit apparaat en wordt niet meegenomen in back-ups of synchronisatie. Synchronisatie voegt metingen, onderhoud, doseringen en aquariuminstellingen samen.</p>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <button onclick="showPage('dashboard')">⌂<small>Home</small></button>
+    <button onclick="showPage('metingen')">⚗<small>Meten</small></button>
+    <button onclick="showPage('geschiedenis')">▤<small>Historie</small></button>
+    <button onclick="showPage('grafieken')">⌁<small>Grafieken</small></button>
+    <button onclick="showPage('onderhoud')">◷<small>Onderhoud</small></button>
+    <button onclick="showPage('voeding')">⚗<small>Voeding</small></button>
+    <button onclick="showPage('instellingen')">⚙<small>Instellingen</small></button>
+  </nav>
+
+  <script src="app.js"></script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js")
+        .then(() => console.log("AquaLog offline actief"))
+        .catch(error => console.error("Offline installatie mislukt:", error));
+    });
+  }
+</script>
+</body>
+</html>
+
