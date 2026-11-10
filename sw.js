@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "aqualog-v3";
+const CACHE_NAME = "aqualog-v4";
 
 const APP_FILES = [
   "./",
