@@ -12,9 +12,12 @@
 </head>
 <body>
   <header>
-    <div>
-      <h1>AquaLog <span>🐠</span></h1>
-      <p>Mijn aquariumlogboek</p>
+    <div class="brand">
+      <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>←</button>
+      <div>
+        <h1>AquaLog <span>🐠</span></h1>
+        <p>Mijn aquariumlogboek</p>
+      </div>
     </div>
     <div id="syncIndicator" class="status">● Lokaal opgeslagen</div>
   </header>
@@ -91,9 +94,7 @@
         <article class="panel quick-panel">
           <div class="panel-heading"><span class="panel-symbol cyan">⌁</span><div><p class="eyebrow">SNEL NAAR</p><h3>Jouw logboek</h3></div></div>
           <div class="quick-links">
-            <button class="quick-link" onclick="showPage('geschiedenis')"><span class="quick-icon cyan">▤</span><span><strong>Meetgeschiedenis</strong><small>Bekijk eerdere waarden</small></span><b>›</b></button>
-            <button class="quick-link" onclick="showPage('grafieken')"><span class="quick-icon violet">⌁</span><span><strong>Grafieken</strong><small>Volg de ontwikkeling</small></span><b>›</b></button>
-            <button class="quick-link" onclick="showPage('onderhoud')"><span class="quick-icon green">◷</span><span><strong>Onderhoud</strong><small>Bekijk je activiteiten</small></span><b>›</b></button>
+            <button class="quick-link" onclick="showPage('metingen')"><span class="quick-icon cyan">▤</span><span><strong>Metingen en historie</strong><small>Waarden invoeren en terugzien</small></span><b>›</b></button>
           </div>
         </article>
         <article class="panel readiness-panel">
@@ -179,72 +180,12 @@
 
         <button type="submit">Meting opslaan</button>
       </form>
-    </section>
-
-    <section id="geschiedenis" class="page">
-      <h2>Meetgeschiedenis</h2>
-      <div id="history">
-        <p class="muted">Je hebt nog geen metingen opgeslagen.</p>
+      <div class="measurement-history">
+        <h2>Meetgeschiedenis</h2>
+        <div id="history">
+          <p class="muted">Je hebt nog geen metingen opgeslagen.</p>
+        </div>
       </div>
-    </section>
-
-    
-<section id="grafieken" class="page">
-  <h2>Waterwaardes analyseren</h2>
-  <p class="muted">Bekijk de ontwikkeling van je aquarium.</p>
-
-  <div class="panel">
-    <label>Kies waterwaarde</label>
-    <select id="chartParameter">
-      <option value="ph">pH</option>
-      <option value="temperature">Temperatuur</option>
-      <option value="kh">KH</option>
-      <option value="gh">GH</option>
-      <option value="no2">NO2</option>
-      <option value="no3">NO3</option>
-      <option value="po4">PO4</option>
-      <option value="nh">NH3/NH4</option>
-      <option value="k">Kalium</option>
-      <option value="fe">IJzer</option>
-      <option value="tds">TDS</option>
-      <option value="ec">EC</option>
-    </select>
-
-    <label>Periode</label>
-    <select id="chartPeriod">
-      <option value="7">Laatste 7 dagen</option>
-      <option value="30" selected>Laatste 30 dagen</option>
-      <option value="90">Laatste 90 dagen</option>
-      <option value="365">Laatste 12 maanden</option>
-      <option value="all">Alle metingen</option>
-    </select>
-
-    <div class="chart-container">
-      <canvas id="waterChart"></canvas>
-    </div>
-    <p id="chartInfo" class="muted">Nog geen gegevens beschikbaar.</p>
-  </div>
-</section>
-
-    <section id="onderhoud" class="page">
-      <h2>Onderhoud</h2>
-      <p class="muted">Houd hier je aquariumonderhoud bij.</p>
-      <form id="maintenanceForm">
-        <label>Datum</label>
-        <input type="date" id="maintenanceDate" required>
-        <label>Soort onderhoud</label>
-        <select id="maintenanceType">
-          <option>Water verversen</option>
-          <option>Filter reinigen</option>
-          <option>Planten snoeien</option>
-          <option>Bodem reinigen</option>
-          <option>Anders</option>
-        </select>
-        <label>Opmerkingen</label>
-        <textarea id="maintenanceNotes"></textarea>
-        <button type="submit">Onderhoud opslaan</button>
-      </form>
-      <div id="maintenanceHistory"></div>
     </section>
 
     <section id="instellingen" class="page">
@@ -292,7 +233,7 @@
           <button id="syncNowButton" type="button">Nu synchroniseren</button>
         </div>
         <p id="syncStatus" class="muted" role="status" aria-live="polite">Nog niet verbonden.</p>
-        <p class="muted">De API-sleutel blijft op dit apparaat en wordt niet meegenomen in back-ups of synchronisatie. Synchronisatie voegt metingen, onderhoud, doseringen en aquariuminstellingen samen.</p>
+        <p class="muted">De API-sleutel blijft op dit apparaat en wordt niet meegenomen in back-ups of synchronisatie.</p>
       </div>
     </section>
   </main>
@@ -300,9 +241,6 @@
   <nav>
     <button onclick="showPage('dashboard')">⌂<small>Home</small></button>
     <button onclick="showPage('metingen')">⚗<small>Meten</small></button>
-    <button onclick="showPage('geschiedenis')">▤<small>Historie</small></button>
-    <button onclick="showPage('grafieken')">⌁<small>Grafieken</small></button>
-    <button onclick="showPage('onderhoud')">◷<small>Onderhoud</small></button>
     <button onclick="showPage('voeding')">⚗<small>Voeding</small></button>
     <button onclick="showPage('instellingen')">⚙<small>Instellingen</small></button>
   </nav>
