@@ -190,6 +190,8 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
 .live-pill.is-warning i { background: #ffb74d; box-shadow: 0 0 10px rgba(255,183,77,.6); }
 .live-pill.is-pi { border-color: rgba(72,216,255,.25); color: #a8eaff; background: rgba(25,94,153,.14); }
 .live-pill.is-pi i { background: #48d8ff; box-shadow: 0 0 10px rgba(72,216,255,.7); }
+.home-status-row { display: flex; justify-content: flex-end; margin: 0 0 10px; }
+.home-status-row .live-pill { margin: 0; }
 .metric { position: relative; overflow: hidden; padding: 15px; }
 .metric::after { position: absolute; right: -24px; bottom: -45px; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(54,199,255,.1), transparent 70%); content: ""; pointer-events: none; }
 .metric small { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; }
@@ -202,6 +204,12 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
 .pink { color: #ff83da !important; }
 .green { color: #66e6a2 !important; }
 .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(250px, .9fr); gap: 14px; margin-top: 14px; }
+.tank-photo-card { min-width: 0; }
+.tank-photo { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: var(--radius); object-fit: cover; }
+.tank-photo-actions { display: flex; justify-content: center; padding: 12px 0 0; }
+.tank-photo-actions button { min-width: 190px; }
+.tank-photo-preview { display: block; width: min(100%, 520px); height: auto; margin: 12px auto; border: 1px solid var(--border); border-radius: 12px; }
+.photo-settings > button { width: 100%; margin-top: 10px; }
 .tank-card { position: relative; display: flex; min-height: 250px; overflow: hidden; align-items: stretch; border: 1px solid #1b2941; border-radius: var(--radius); background: linear-gradient(115deg, #0d1830 0%, #0b1427 55%, #0d203a 100%); box-shadow: 0 12px 34px rgba(0,0,0,.2); }
 .tank-copy { position: relative; z-index: 2; display: flex; width: 58%; flex-direction: column; align-items: flex-start; justify-content: center; padding: 24px; }
 .tank-copy h3 { margin: 0 0 12px; font-size: clamp(19px, 2.7vw, 27px); line-height: 1.2; letter-spacing: -.45px; }

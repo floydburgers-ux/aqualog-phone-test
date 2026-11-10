@@ -214,10 +214,8 @@ document.getElementById("measurementForm").addEventListener("submit", async even
 });
 
 async function renderDashboard() {
-  const tankName = await getSetting("tankName");
   const microDose = await getSetting("microDose");
   const macroDose = await getSetting("macroDose");
-  document.getElementById("dashboardTitle").textContent = tankName || "Mijn aquarium";
   document.getElementById("dashboardMicroDose").textContent =
     (microDose ?? 17) + " ml";
   document.getElementById("dashboardMacroDose").textContent =
@@ -240,8 +238,6 @@ async function renderDashboard() {
     display("ph", null);
     display("kh", null, "°dKH");
     display("no3", null, "ppm");
-    document.getElementById("lastActivity").textContent =
-      "Nog geen metingen geregistreerd.";
     return;
   }
 
@@ -251,9 +247,6 @@ async function renderDashboard() {
   display("ph", v.ph);
   display("kh", v.kh, "°dKH");
   display("no3", v.no3, "ppm");
-
-  document.getElementById("lastActivity").textContent =
-    "Laatste meting: " + new Date(latest.date).toLocaleString("nl-NL");
 }
 
 function numberSetting(key, fallback) {
@@ -427,6 +420,71 @@ async function loadSettings() {
   }
 }
 
+async function loadTankPhoto() {
+  const savedPhoto = await getSetting("tankPhoto");
+  const photoUrl = savedPhoto || "./aquarium-photo.jpg?v=20261110-6";
+  document.getElementById("tankPhotoHome").src = photoUrl;
+  document.getElementById("tankPhotoPreview").src = photoUrl;
+}
+
+function compressTankPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    const releaseUrl = () => URL.revokeObjectURL(objectUrl);
+
+    image.onload = () => {
+      try {
+        const scale = Math.min(1, 1600 / image.naturalWidth, 1200 / image.naturalHeight);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("De foto kon niet worden verwerkt.");
+        context.fillStyle = "#09151d";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const result = canvas.toDataURL("image/jpeg", 0.82);
+        releaseUrl();
+        resolve(result);
+      } catch (error) {
+        releaseUrl();
+        reject(error);
+      }
+    };
+
+    image.onerror = () => {
+      releaseUrl();
+      reject(new Error("Dit afbeeldingsbestand kon niet worden geopend."));
+    };
+    image.src = objectUrl;
+  });
+}
+
+async function saveTankPhoto() {
+  const input = document.getElementById("tankPhotoFile");
+  const file = input.files?.[0];
+  if (!file) {
+    alert("Kies eerst een foto van je aquarium.");
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    alert("Kies een afbeeldingsbestand.");
+    return;
+  }
+
+  try {
+    const photo = await compressTankPhoto(file);
+    await setSetting("tankPhoto", photo);
+    await loadTankPhoto();
+    input.value = "";
+    alert("De aquariumfoto is op deze telefoon bijgewerkt.");
+  } catch (error) {
+    alert("De aquariumfoto kon niet worden opgeslagen: " + error.message);
+  }
+}
+
 async function exportData() {
   const data = {
     app: "AquaLog",
@@ -468,6 +526,7 @@ async function importData() {
 
   try {
     const data = JSON.parse(await file.text());
+    const currentTankPhoto = await getSetting("tankPhoto");
 
     if (data.app !== "AquaLog" || !Array.isArray(data.measurements) ||
         !Array.isArray(data.maintenance) || !Array.isArray(data.settings)) {
@@ -503,7 +562,10 @@ async function importData() {
       transaction.onabort = () => reject(transaction.error);
     });
 
+    if (currentTankPhoto) await setSetting("tankPhoto", currentTankPhoto);
+
     await loadSettings();
+    await loadTankPhoto();
     await renderDashboard();
     await renderHistory();
     await renderDosing();
@@ -515,7 +577,7 @@ async function importData() {
   }
 }
 
-const DEVICE_ONLY_SETTINGS = new Set(["syncApiUrl", "syncToken"]);
+const DEVICE_ONLY_SETTINGS = new Set(["syncApiUrl", "syncToken", "tankPhoto"]);
 
 async function syncSettingsFromForm() {
   await setSetting("syncApiUrl", document.getElementById("syncApiUrl").value.trim().replace(/\/+$/, ""));
@@ -601,6 +663,7 @@ async function syncWithRaspberry() {
     });
     await mergeRemoteSnapshot(snapshot.entities || {});
     await loadSettings();
+    await loadTankPhoto();
     await renderDashboard();
     await renderHistory();
     await renderDosing();
@@ -667,6 +730,7 @@ async function initialize() {
     }
 
     await loadSettings();
+    await loadTankPhoto();
     await loadSyncSettings();
     await renderDashboard();
     await renderHistory();

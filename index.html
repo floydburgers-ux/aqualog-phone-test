@@ -7,27 +7,19 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-5" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-5">
-  <link rel="stylesheet" href="style.css?v=20261110-5">
+  <link rel="icon" href="icon.svg?v=20261110-6" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261110-6">
+  <link rel="stylesheet" href="style.css?v=20261110-6">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-5" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-6" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
   <main>
     <section id="dashboard" class="page active">
-      <div class="dashboard-heading">
-        <div class="dashboard-title-block">
-          <img class="dashboard-fish-mark" src="./FB-AquaLog-beeldmerk.svg?v=20261110-5" alt="">
-          <div>
-            <p class="eyebrow">AQUALOG · AQUARIUM OVERZICHT</p>
-            <h2 id="dashboardTitle">Mijn aquarium</h2>
-            <p class="muted">Een helder overzicht van de laatste metingen en activiteit.</p>
-          </div>
-        </div>
+      <div class="home-status-row">
         <div id="syncIndicator" class="live-pill"><i></i><span id="syncIndicatorText">Lokaal opgeslagen</span></div>
       </div>
 
@@ -55,21 +47,10 @@
       </div>
 
       <div class="dashboard-grid">
-        <article class="tank-card">
-          <div class="tank-copy">
-            <p class="eyebrow">JOUW AQUARIUM</p>
-            <h3>Een rustige blik<br>op je onderwaterwereld</h3>
-            <p id="lastActivity" class="tank-activity">Nog geen metingen geregistreerd.</p>
-            <button onclick="showPage('metingen')">＋ Nieuwe meting</button>
-          </div>
-          <div class="tank-art" role="img" aria-label="Gestileerde onderwaterwereld met vissen en waterplanten">
-            <span class="tank-glow"></span>
-            <span class="bubble bubble-one"></span><span class="bubble bubble-two"></span>
-            <span class="bubble bubble-three"></span>
-            <span class="fish fish-one"></span><span class="fish fish-two"></span>
-            <span class="plant plant-one"></span><span class="plant plant-two"></span><span class="plant plant-three"></span>
-            <span class="coral"></span>
-            <span class="tank-floor"></span>
+        <article class="tank-photo-card">
+          <img id="tankPhotoHome" class="tank-photo" src="./aquarium-photo.jpg?v=20261110-6" alt="Mijn aquarium">
+          <div class="tank-photo-actions">
+            <button type="button" onclick="showPage('metingen')">＋ Nieuwe meting</button>
           </div>
         </article>
 
@@ -209,6 +190,16 @@
         <button onclick="saveSettings()">Instellingen opslaan</button>
       </div>
 
+      <div class="panel photo-settings">
+        <h3>Aquariumfoto</h3>
+        <p class="muted">Kies een nieuwe foto om de huidige op dit apparaat te vervangen. De foto wordt niet naar de Raspberry Pi gestuurd.</p>
+        <img id="tankPhotoPreview" class="tank-photo-preview" src="./aquarium-photo.jpg?v=20261110-6" alt="Voorbeeld van de aquariumfoto">
+        <label for="tankPhotoFile">Nieuwe foto kiezen
+          <input id="tankPhotoFile" type="file" accept="image/*">
+        </label>
+        <button type="button" onclick="saveTankPhoto()">Foto wijzigen</button>
+      </div>
+
       <div class="panel">
         <h3>Gegevensbeheer</h3>
         <button onclick="exportData()">Back-up downloaden</button>
@@ -239,15 +230,15 @@
   <nav>
     <button onclick="showPage('dashboard')">⌂<small>Home</small></button>
     <button onclick="showPage('metingen')">⚗<small>Meten</small></button>
-    <button onclick="showPage('voeding')">⚗<small>Voeding</small></button>
+    <button onclick="showPage('voeding')">🌿<small>Voeding</small></button>
     <button onclick="showPage('instellingen')">⚙<small>Instellingen</small></button>
   </nav>
 
-  <script src="app.js?v=20261110-5"></script>
+  <script src="app.js?v=20261110-6"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-5")
+      navigator.serviceWorker.register("./sw.js?v=20261110-6")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });
