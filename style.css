@@ -36,6 +36,9 @@ header {
   border-bottom: 1px solid var(--border);
 }
 
+header .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
+header .brand > div { min-width: 0; }
+.back-home { width: 38px; height: 38px; flex: 0 0 38px; padding: 0; border-radius: 50%; font-size: 21px; line-height: 1; }
 header h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
 header h1 span { font-size: 18px; }
 header p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
@@ -146,21 +149,11 @@ nav button {
 nav button small { font-size: 9px; font-weight: 500; }
 nav button:hover, nav button:focus-visible { color: var(--accent); background: rgba(54, 199, 255, .07); }
 
-#history, #maintenanceHistory { margin-top: 18px; }
 .entry { margin-bottom: 10px; padding: 14px; }
+.measurement-history { margin-top: 26px; }
+.measurement-history h2 { padding-top: 20px; border-top: 1px solid var(--border); }
 .entry h3 { margin-bottom: 8px; color: var(--accent); }
 .entry p { margin: 5px 0; color: #aab7cc; font-size: 12px; line-height: 1.6; }
-.chart-container {
-  position: relative;
-  width: 100%;
-  height: 280px;
-  margin-top: 18px;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #080e1b;
-}
-#waterChart { display: block; width: 100%; height: 100%; }
 
 @media (min-width: 620px) {
   body { padding-bottom: 92px; }
