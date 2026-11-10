@@ -7,13 +7,13 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-10" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-10">
-  <link rel="stylesheet" href="style.css?v=20261110-10">
+  <link rel="icon" href="icon.svg?v=20261110-11" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261110-11">
+  <link rel="stylesheet" href="style.css?v=20261110-11">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-10" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-11" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
@@ -190,8 +190,11 @@
         <input id="targetTemp" type="number" step="0.1" value="25">
         <label>Micro dosering (ml per dag)</label>
         <input id="microDose" type="number" value="17">
+        <label class="check-setting"><input id="autoMicroDose" type="checkbox"><span>Micro elke dag automatisch afboeken</span></label>
         <label>Macro dosering (ml per dag)</label>
         <input id="macroDose" type="number" value="17">
+        <label class="check-setting"><input id="autoMacroDose" type="checkbox"><span>Macro elke dag automatisch afboeken</span></label>
+        <p class="muted auto-dose-note">Bij inschakelen wordt de dosering van vandaag meteen afgeboekt. De app houdt alleen de voorraad bij en stuurt de pomp niet aan. Gemiste dagen worden bijgewerkt wanneer je de app weer opent. Handmatig doseren blijft beschikbaar als de pomp uitvalt.</p>
         <label>Micro voorraad (ml)</label>
         <input id="microStock" type="number" min="0" step="0.01" value="0">
         <label>Macro voorraad (ml)</label>
@@ -257,11 +260,11 @@
     </button>
   </nav>
 
-  <script src="app.js?v=20261110-10"></script>
+  <script src="app.js?v=20261110-11"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-10")
+      navigator.serviceWorker.register("./sw.js?v=20261110-11")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });

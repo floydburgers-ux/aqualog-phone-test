@@ -6,6 +6,7 @@ let syncTimer = null;
 let syncInFlight = false;
 let homeWarningTimer = null;
 let homeStockWarnings = [];
+let automaticDoseProcessing = false;
 
 function updateHomeWarnings(warnings) {
   const warningEl = document.getElementById("homeWarning");
@@ -180,6 +181,89 @@ function localDateTime() {
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60000;
   return new Date(now.getTime() - offset).toISOString().slice(0, 16);
+}
+
+function localDayKey(date = new Date()) {
+  const pad = value => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function shiftDayKey(dayKey, amount) {
+  const [year, month, day] = dayKey.split("-").map(Number);
+  const date = new Date(year, month - 1, day, 12);
+  date.setDate(date.getDate() + amount);
+  return localDayKey(date);
+}
+
+async function processAutomaticDoses() {
+  if (!db || automaticDoseProcessing) return false;
+  automaticDoseProcessing = true;
+  let changed = false;
+  try {
+    const today = localDayKey();
+    const doses = await getAll("doses");
+    const knownAutomaticDoses = new Set(doses.filter(dose => dose.source === "automatic").map(dose => dose.syncId));
+
+    for (const product of ["micro", "macro"]) {
+      const productTitle = product[0].toUpperCase() + product.slice(1);
+      if (!(await getSetting("auto" + productTitle + "Dose"))) continue;
+
+      const lastDateKey = "auto" + productTitle + "DoseLastDate";
+      let lastDate = await getSetting(lastDateKey);
+      if (!lastDate) lastDate = shiftDayKey(today, -1);
+
+      const amount = await numberSetting(product + "Dose", 17);
+      while (lastDate < today) {
+        const doseDate = shiftDayKey(lastDate, 1);
+        const stockKey = product + "Stock";
+        const currentStock = await numberSetting(stockKey, 0);
+        const syncId = `aqualog-auto-dose-${product}-${doseDate}`;
+        const alreadyRecorded = knownAutomaticDoses.has(syncId);
+        const transaction = db.transaction(["doses", "settings"], "readwrite");
+        const settingStore = transaction.objectStore("settings");
+
+        if (!alreadyRecorded && amount > 0 && currentStock > 0) {
+          transaction.objectStore("doses").add({
+            date: doseDate + "T00:00",
+            product,
+            amount,
+            note: "Automatisch dagelijks afgeschreven",
+            source: "automatic",
+            schemaVersion: 1,
+            syncId,
+            updatedAt: new Date().toISOString()
+          });
+          settingStore.put({ key: stockKey, value: Math.max(0, Math.round((currentStock - amount) * 100) / 100), updatedAt: new Date().toISOString() });
+          knownAutomaticDoses.add(syncId);
+        }
+
+        settingStore.put({ key: lastDateKey, value: doseDate, updatedAt: new Date().toISOString() });
+        await new Promise((resolve, reject) => {
+          transaction.oncomplete = resolve;
+          transaction.onerror = () => reject(transaction.error);
+          transaction.onabort = () => reject(transaction.error);
+        });
+        lastDate = doseDate;
+        changed = true;
+      }
+    }
+  } finally {
+    automaticDoseProcessing = false;
+  }
+  if (changed) schedulePiSync();
+  return changed;
+}
+
+async function refreshAutomaticDoses() {
+  if (!db || document.hidden) return;
+  try {
+    if (await processAutomaticDoses()) {
+      await renderDosing();
+      await renderDashboard();
+    }
+  } catch (error) {
+    console.error("Automatische voorraadbijwerking mislukt:", error);
+  }
 }
 
 function showPage(page, options = {}) {
@@ -440,7 +524,9 @@ async function saveSettings() {
     maxPh: Number(document.getElementById("maxPh").value),
     targetTemp: Number(document.getElementById("targetTemp").value),
     microDose: Number(document.getElementById("microDose").value),
+    autoMicroDose: document.getElementById("autoMicroDose").checked,
     macroDose: Number(document.getElementById("macroDose").value),
+    autoMacroDose: document.getElementById("autoMacroDose").checked,
     microStock: Number(document.getElementById("microStock").value),
     macroStock: Number(document.getElementById("macroStock").value),
     lowStockDays: Number(document.getElementById("lowStockDays").value)
@@ -450,10 +536,24 @@ async function saveSettings() {
     alert("Gebruik voor hoeveelheden en voorraad een geldig getal van 0 of hoger."); return;
   }
 
+  const today = localDayKey();
+  for (const product of ["micro", "macro"]) {
+    const title = product[0].toUpperCase() + product.slice(1);
+    const enabledKey = "auto" + title + "Dose";
+    const wasEnabled = Boolean(await getSetting(enabledKey));
+    const enabled = settings[enabledKey];
+    if (enabled && !wasEnabled) {
+      await setSetting(enabledKey + "LastDate", shiftDayKey(today, -1));
+    } else if (!enabled) {
+      await setSetting(enabledKey + "LastDate", today);
+    }
+  }
+
   for (const [key, value] of Object.entries(settings)) {
     await setSetting(key, value);
   }
 
+  await processAutomaticDoses();
   await renderDashboard();
   await renderDosing();
   schedulePiSync();
@@ -462,12 +562,14 @@ async function saveSettings() {
 }
 
 async function loadSettings() {
-  const keys = ["tankName", "maxPh", "targetTemp", "microDose", "macroDose", "microStock", "macroStock", "lowStockDays"];
+  const keys = ["tankName", "maxPh", "targetTemp", "microDose", "autoMicroDose", "macroDose", "autoMacroDose", "microStock", "macroStock", "lowStockDays"];
 
   for (const key of keys) {
     const value = await getSetting(key);
     if (value !== undefined) {
-      document.getElementById(key).value = value;
+      const field = document.getElementById(key);
+      if (field.type === "checkbox") field.checked = Boolean(value);
+      else field.value = value;
     }
   }
 
@@ -626,6 +728,7 @@ async function importData() {
 
     await loadSettings();
     await loadTankPhoto();
+    await processAutomaticDoses();
     await renderDashboard();
     await renderHistory();
     await renderDosing();
@@ -724,6 +827,7 @@ async function syncWithRaspberry() {
     await mergeRemoteSnapshot(snapshot.entities || {});
     await loadSettings();
     await loadTankPhoto();
+    await processAutomaticDoses();
     await renderDashboard();
     await renderHistory();
     await renderDosing();
@@ -778,6 +882,8 @@ async function loadSyncSettings() {
 document.getElementById("testSyncButton").addEventListener("click", testRaspberryConnection);
 document.getElementById("syncNowButton").addEventListener("click", syncWithRaspberry);
 window.addEventListener("online", schedulePiSync);
+document.addEventListener("visibilitychange", refreshAutomaticDoses);
+setInterval(refreshAutomaticDoses, 60000);
 
 async function initialize() {
   try {
@@ -792,6 +898,7 @@ async function initialize() {
     await loadSettings();
     await loadTankPhoto();
     await loadSyncSettings();
+    await processAutomaticDoses();
     await renderDashboard();
     await renderHistory();
     document.getElementById("doseDate").value = localDateTime();

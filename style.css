@@ -106,6 +106,9 @@ input, select, textarea {
   font: inherit;
   font-size: 14px;
 }
+label.check-setting { display: flex; align-items: center; gap: 10px; margin: 10px 0 14px; color: #d2def2; }
+.check-setting input { width: 18px; height: 18px; flex: 0 0 18px; margin: 0; padding: 0; accent-color: var(--accent); }
+.auto-dose-note { margin: 8px 0 14px; }
 input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(54, 199, 255, .1); }
 textarea { min-height: 90px; resize: vertical; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
