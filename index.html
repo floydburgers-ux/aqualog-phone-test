@@ -7,13 +7,13 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-11" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-11">
-  <link rel="stylesheet" href="style.css?v=20261110-11">
+  <link rel="icon" href="icon.svg?v=20261110-12" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261110-12">
+  <link rel="stylesheet" href="style.css?v=20261110-12">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-11" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-12" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
@@ -98,7 +98,23 @@
 
     <section id="voeding" class="page">
       <h2>Plantenvoeding</h2>
-      <p class="muted">Registreer elke dosering. De voorraad wordt automatisch bijgewerkt.</p>
+      <p class="muted">Kies hoe de voorraad wordt bijgewerkt. Handmatig doseren blijft beschikbaar als reserve.</p>
+      <div class="panel dosing-mode-panel">
+        <h3>Afboekmethode</h3>
+        <label>Micro
+          <select id="microDoseMode" onchange="setDosingMode('micro', this.value)">
+            <option value="manual">Handmatig registreren</option>
+            <option value="automatic">Automatisch dagelijks</option>
+          </select>
+        </label>
+        <label>Macro
+          <select id="macroDoseMode" onchange="setDosingMode('macro', this.value)">
+            <option value="manual">Handmatig registreren</option>
+            <option value="automatic">Automatisch dagelijks</option>
+          </select>
+        </label>
+        <p class="muted">Automatisch gebruikt de ingestelde dagdosering en boekt vandaag meteen af. Handmatig invoeren blijft beschikbaar bij een storing. Deze instelling houdt alleen de voorraad bij en stuurt de pomp niet aan.</p>
+      </div>
       <div class="panel stock-overview">
         <h3>Voorraad nu</h3>
         <p>Micro: <strong id="dosingMicroStockSummary">0 ml</strong> · <span id="dosingMicroDaysSummary">--</span></p>
@@ -260,11 +276,11 @@
     </button>
   </nav>
 
-  <script src="app.js?v=20261110-11"></script>
+  <script src="app.js?v=20261110-12"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-11")
+      navigator.serviceWorker.register("./sw.js?v=20261110-12")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });

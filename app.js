@@ -553,6 +553,7 @@ async function saveSettings() {
     await setSetting(key, value);
   }
 
+  await syncDosingModeControls();
   await processAutomaticDoses();
   await renderDashboard();
   await renderDosing();
@@ -579,6 +580,43 @@ async function loadSettings() {
       await setSetting("maxPh", legacyMaxPh);
       document.getElementById("maxPh").value = legacyMaxPh;
     }
+  }
+  await syncDosingModeControls();
+}
+
+async function syncDosingModeControls() {
+  for (const product of ["micro", "macro"]) {
+    const title = product[0].toUpperCase() + product.slice(1);
+    const enabled = Boolean(await getSetting("auto" + title + "Dose"));
+    const mode = document.getElementById(product + "DoseMode");
+    const checkbox = document.getElementById("auto" + title + "Dose");
+    if (mode) mode.value = enabled ? "automatic" : "manual";
+    if (checkbox) checkbox.checked = enabled;
+  }
+}
+
+async function setDosingMode(product, mode) {
+  if (!["micro", "macro"].includes(product) || !["manual", "automatic"].includes(mode)) return;
+  const title = product[0].toUpperCase() + product.slice(1);
+  const enabledKey = "auto" + title + "Dose";
+  const lastDateKey = enabledKey + "LastDate";
+  const enabled = mode === "automatic";
+  const wasEnabled = Boolean(await getSetting(enabledKey));
+  if (enabled === wasEnabled) return;
+
+  const today = localDayKey();
+  const dateToStore = enabled ? shiftDayKey(today, -1) : today;
+  await setSetting(lastDateKey, dateToStore);
+  await setSetting(enabledKey, enabled);
+  await syncDosingModeControls();
+
+  try {
+    if (enabled) await processAutomaticDoses();
+    await renderDosing();
+    await renderDashboard();
+    schedulePiSync();
+  } catch (error) {
+    alert("De afboekmethode kon niet worden bijgewerkt: " + error.message);
   }
 }
 
