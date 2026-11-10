@@ -4,6 +4,35 @@ const DB_VERSION = 2;
 let db;
 let syncTimer = null;
 let syncInFlight = false;
+let homeWarningTimer = null;
+let homeStockWarnings = [];
+
+function updateHomeWarnings(warnings) {
+  const warningEl = document.getElementById("homeWarning");
+  if (!warningEl) return;
+  if (homeWarningTimer) clearInterval(homeWarningTimer);
+  homeWarningTimer = null;
+  warningEl.hidden = warnings.length === 0;
+  warningEl.classList.remove("is-danger");
+  if (!warnings.length) {
+    warningEl.textContent = "";
+    return;
+  }
+
+  let index = 0;
+  const showWarning = () => {
+    const warning = warnings[index];
+    warningEl.textContent = warning.text;
+    warningEl.classList.toggle("is-danger", warning.level === "danger");
+  };
+  showWarning();
+  if (warnings.length > 1) {
+    homeWarningTimer = setInterval(() => {
+      index = (index + 1) % warnings.length;
+      showWarning();
+    }, 5000);
+  }
+}
 
 const measurementFields = {
   temperature: "mTemp",
@@ -240,6 +269,7 @@ async function renderDashboard() {
     display("gh", null, "°dGH");
     display("no3", null, "ppm");
     display("po4", null, "ppm");
+    updateHomeWarnings(homeStockWarnings);
     return;
   }
 
@@ -251,6 +281,16 @@ async function renderDashboard() {
   display("gh", v.gh, "°dGH");
   display("no3", v.no3, "ppm");
   display("po4", v.po4, "ppm");
+
+  const warnings = [...homeStockWarnings];
+  const maxPh = await numberSetting("maxPh", 6.9);
+  const measuredPh = Number(v.ph);
+  if (v.ph !== null && v.ph !== undefined && Number.isFinite(measuredPh) && measuredPh > maxPh) {
+    const measuredLabel = measuredPh.toLocaleString("nl-NL", { maximumFractionDigits: 2 });
+    const maxLabel = maxPh.toLocaleString("nl-NL", { maximumFractionDigits: 2 });
+    warnings.push({ text: `pH te hoog · ${measuredLabel} (max. ${maxLabel})`, level: "danger" });
+  }
+  updateHomeWarnings(warnings);
 }
 
 function numberSetting(key, fallback) {
@@ -258,16 +298,18 @@ function numberSetting(key, fallback) {
 }
 
 async function renderStockSummary() {
-  const [microStock, macroStock, microDose, macroDose, threshold, doses] = await Promise.all([
+  const [microStock, macroStock, microDose, macroDose, threshold, doses, savedMicroStock, savedMacroStock] = await Promise.all([
     numberSetting("microStock", 0), numberSetting("macroStock", 0),
     numberSetting("microDose", 17), numberSetting("macroDose", 17),
-    numberSetting("lowStockDays", 7), getAll("doses")
+    numberSetting("lowStockDays", 7), getAll("doses"),
+    getSetting("microStock"), getSetting("macroStock")
   ]);
   const last = { micro: null, macro: null };
   doses.sort((a, b) => b.date.localeCompare(a.date));
   for (const dose of doses) if (last[dose.product] === null) last[dose.product] = dose;
   const stocks = { micro: microStock, macro: macroStock };
   const daily = { micro: microDose, macro: macroDose };
+  homeStockWarnings = [];
   for (const product of ["micro", "macro"]) {
     const days = daily[product] > 0 ? Math.floor(stocks[product] / daily[product]) : null;
     const name = product === "micro" ? "Micro" : "Macro";
@@ -284,6 +326,12 @@ async function renderStockSummary() {
       const low = stocks[product] <= 0 || (days !== null && days <= threshold);
       alertEl.hidden = !low;
       alertEl.textContent = stocks[product] <= 0 ? name + ": voorraad op. Vul de voorraad aan in Instellingen." : name + ": nog ongeveer " + days + " dagen voorraad.";
+    }
+    const stockWasEntered = product === "micro" ? savedMicroStock !== undefined : savedMacroStock !== undefined;
+    if (stockWasEntered && stocks[product] <= 0) {
+      homeStockWarnings.push({ text: `${name} voorraad op`, level: "danger" });
+    } else if (stockWasEntered && days !== null && days <= threshold) {
+      homeStockWarnings.push({ text: `${name} bijna op · ${days} ${days === 1 ? "dag" : "dagen"}`, level: "warning" });
     }
     const doseEl = document.getElementById(product + "LastDose");
     if (doseEl) doseEl.textContent = last[product] ? new Date(last[product].date).toLocaleString("nl-NL") + " · " + last[product].amount + " ml" : "Nog geen dosering geregistreerd";
@@ -389,7 +437,7 @@ async function renderHistory() {
 async function saveSettings() {
   const settings = {
     tankName: document.getElementById("tankName").value,
-    targetPh: Number(document.getElementById("targetPh").value),
+    maxPh: Number(document.getElementById("maxPh").value),
     targetTemp: Number(document.getElementById("targetTemp").value),
     microDose: Number(document.getElementById("microDose").value),
     macroDose: Number(document.getElementById("macroDose").value),
@@ -414,12 +462,20 @@ async function saveSettings() {
 }
 
 async function loadSettings() {
-  const keys = ["tankName", "targetPh", "targetTemp", "microDose", "macroDose", "microStock", "macroStock", "lowStockDays"];
+  const keys = ["tankName", "maxPh", "targetTemp", "microDose", "macroDose", "microStock", "macroStock", "lowStockDays"];
 
   for (const key of keys) {
     const value = await getSetting(key);
     if (value !== undefined) {
       document.getElementById(key).value = value;
+    }
+  }
+
+  if (await getSetting("maxPh") === undefined) {
+    const legacyMaxPh = await getSetting("targetPh");
+    if (legacyMaxPh !== undefined) {
+      await setSetting("maxPh", legacyMaxPh);
+      document.getElementById("maxPh").value = legacyMaxPh;
     }
   }
 }
