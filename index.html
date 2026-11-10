@@ -7,30 +7,28 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <div class="brand">
-      <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>←</button>
-      <div>
-        <h1>AquaLog <span>🐠</span></h1>
-        <p>Mijn aquariumlogboek</p>
-      </div>
-    </div>
-    <div id="syncIndicator" class="status">● Lokaal opgeslagen</div>
+    <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>←</button>
+    <img class="brand-logo" src="./FB-AquaLog.svg" alt="FB AquaLog">
   </header>
 
   <main>
     <section id="dashboard" class="page active">
       <div class="dashboard-heading">
-        <div>
-          <p class="eyebrow">AQUALOG · AQUARIUM OVERZICHT</p>
-          <h2 id="dashboardTitle">Mijn aquarium</h2>
-          <p class="muted">Een helder overzicht van de laatste metingen en activiteit.</p>
+        <div class="dashboard-title-block">
+          <img class="dashboard-fish-mark" src="./FB-AquaLog-beeldmerk.svg" alt="">
+          <div>
+            <p class="eyebrow">AQUALOG · AQUARIUM OVERZICHT</p>
+            <h2 id="dashboardTitle">Mijn aquarium</h2>
+            <p class="muted">Een helder overzicht van de laatste metingen en activiteit.</p>
+          </div>
         </div>
-        <span class="live-pill"><i></i> Lokaal opgeslagen</span>
+        <div id="syncIndicator" class="live-pill"><i></i><span id="syncIndicatorText">Lokaal opgeslagen</span></div>
       </div>
 
       <div class="cards">
