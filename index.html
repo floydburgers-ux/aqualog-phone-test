@@ -7,13 +7,13 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-12" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-12">
-  <link rel="stylesheet" href="style.css?v=20261110-12">
+  <link rel="icon" href="icon.svg?v=20261110-13" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261110-13">
+  <link rel="stylesheet" href="style.css?v=20261110-13">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-12" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-13" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
@@ -57,26 +57,25 @@
         </article>
       </div>
 
+      <div class="home-stock-summary" aria-label="Plantenvoeding voorraad">
+        <article class="home-stock-card">
+          <span>Micro</span>
+          <strong id="microStockSummary">0 ml</strong>
+          <small id="microDaysSummary">-- dagen voorraad</small>
+        </article>
+        <article class="home-stock-card">
+          <span>Macro</span>
+          <strong id="macroStockSummary">0 ml</strong>
+          <small id="macroDaysSummary">-- dagen voorraad</small>
+        </article>
+      </div>
+
       <div class="dashboard-grid">
         <article class="tank-photo-card">
           <img id="tankPhotoHome" class="tank-photo" src="./aquarium-photo.jpg?v=20261110-6" alt="Mijn aquarium">
           <div class="tank-photo-actions">
             <button type="button" onclick="showPage('metingen')">＋ Nieuwe meting</button>
           </div>
-        </article>
-
-        <article class="panel routine-card">
-          <div class="panel-heading"><span class="panel-symbol violet">✦</span><div><p class="eyebrow">DAGELIJKSE ROUTINE</p><h3>Plantenvoeding</h3></div></div>
-          <div class="dose-row"><span class="dose-dot cyan"></span><span>Micro</span><strong id="dashboardMicroDose">17 ml</strong></div>
-          <div class="dose-row"><span class="dose-dot violet"></span><span>Macro</span><strong id="dashboardMacroDose">17 ml</strong></div>
-          <p id="microStockAlert" class="stock-alert" hidden></p>
-          <p id="macroStockAlert" class="stock-alert" hidden></p>
-          <div class="dose-row stock-line"><span>Micro voorraad</span><strong id="microStockSummary">0 ml</strong></div>
-          <small id="microDaysSummary" class="stock-days">--</small>
-          <div class="dose-row stock-line"><span>Macro voorraad</span><strong id="macroStockSummary">0 ml</strong></div>
-          <small id="macroDaysSummary" class="stock-days">--</small>
-          <p class="routine-note">Doseringen worden van de voorraad afgetrokken wanneer je ze registreert.</p>
-          <button class="button-secondary" onclick="showPage('voeding')">Dosering registreren <span>↗</span></button>
         </article>
       </div>
 
@@ -99,6 +98,25 @@
     <section id="voeding" class="page">
       <h2>Plantenvoeding</h2>
       <p class="muted">Kies hoe de voorraad wordt bijgewerkt. Handmatig doseren blijft beschikbaar als reserve.</p>
+      <div class="panel stock-overview">
+        <h3>Voorraad en dagdosering</h3>
+        <div class="feeding-stock-grid">
+          <article class="feeding-stock-item">
+            <h4>Micro</h4>
+            <div class="dose-row"><span>Voorraad</span><strong id="dosingMicroStockSummary">0 ml</strong></div>
+            <small id="dosingMicroDaysSummary" class="stock-days">-- dagen voorraad</small>
+            <div class="dose-row"><span>Dagdosering</span><strong id="dashboardMicroDose">17 ml</strong></div>
+            <p id="microStockAlert" class="stock-alert" hidden></p>
+          </article>
+          <article class="feeding-stock-item">
+            <h4>Macro</h4>
+            <div class="dose-row"><span>Voorraad</span><strong id="dosingMacroStockSummary">0 ml</strong></div>
+            <small id="dosingMacroDaysSummary" class="stock-days">-- dagen voorraad</small>
+            <div class="dose-row"><span>Dagdosering</span><strong id="dashboardMacroDose">17 ml</strong></div>
+            <p id="macroStockAlert" class="stock-alert" hidden></p>
+          </article>
+        </div>
+      </div>
       <div class="panel dosing-mode-panel">
         <h3>Afboekmethode</h3>
         <label>Micro
@@ -114,11 +132,6 @@
           </select>
         </label>
         <p class="muted">Automatisch gebruikt de ingestelde dagdosering en boekt vandaag meteen af. Handmatig invoeren blijft beschikbaar bij een storing. Deze instelling houdt alleen de voorraad bij en stuurt de pomp niet aan.</p>
-      </div>
-      <div class="panel stock-overview">
-        <h3>Voorraad nu</h3>
-        <p>Micro: <strong id="dosingMicroStockSummary">0 ml</strong> · <span id="dosingMicroDaysSummary">--</span></p>
-        <p>Macro: <strong id="dosingMacroStockSummary">0 ml</strong> · <span id="dosingMacroDaysSummary">--</span></p>
       </div>
       <form id="dosingForm" class="panel">
         <label>Product
@@ -276,11 +289,11 @@
     </button>
   </nav>
 
-  <script src="app.js?v=20261110-12"></script>
+  <script src="app.js?v=20261110-13"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-12")
+      navigator.serviceWorker.register("./sw.js?v=20261110-13")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });
