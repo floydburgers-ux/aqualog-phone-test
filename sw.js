@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "aqualog-v4";
+const CACHE_NAME = "aqualog-v5";
 
 const APP_FILES = [
   "./",
@@ -7,7 +7,9 @@ const APP_FILES = [
   "./style.css",
   "./app.js",
   "./manifest.json",
-  "./icon.svg"
+  "./icon.svg",
+  "./FB-AquaLog.svg",
+  "./FB-AquaLog-beeldmerk.svg"
 ];
 
 self.addEventListener("install", event => {
