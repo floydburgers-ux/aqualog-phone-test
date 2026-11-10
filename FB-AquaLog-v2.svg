@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="432" height="112" viewBox="0 0 432 112" role="img" aria-labelledby="title desc">
+  <title id="title">FB AquaLog</title>
+  <desc id="desc">Een geometrisch FB-monogram in de vorm van een vis, met een eigen AquaLog-woordmerk.</desc>
+  <defs>
+    <linearGradient id="fin" x1="17" y1="79" x2="98" y2="26" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#55B9FF"/>
+      <stop offset=".62" stop-color="#5AEFD3"/>
+      <stop offset="1" stop-color="#BBFF9D"/>
+    </linearGradient>
+  </defs>
+  <rect width="432" height="112" rx="27" fill="#09151D"/>
+  <path d="M27 0h378a27 27 0 0 1 27 27v58a27 27 0 0 1-27 27H27A27 27 0 0 1 0 85V27A27 27 0 0 1 27 0Z" fill="none" stroke="#27404A" stroke-width="2"/>
+  <g transform="translate(20 0)">
+    <path d="M9 37l23 12 14-18h23c17 0 31 10 41 25-10 15-24 25-41 25H46L32 63 9 75l6-19Z" fill="url(#fin)"/>
+    <path d="M36 69l15-30h24l-4 7H56l-3.5 7H64l-3.5 7H49l-8 16Z" fill="#09151D"/>
+    <path d="M75 43h7c7 0 10 3 10 7 0 3-2 5-5 6 3 1 4 3 4 6 0 5-5 9-12 9H61l4-8h14c3 0 4-1 4-3 0-1-1-2-3-2H68l4-7h9c2 0 3-1 3-2s-1-2-3-2h-8Z" fill="#09151D"/>
+    <circle cx="99" cy="54" r="2.4" fill="#09151D"/>
+  </g>
+  <path d="M149 31v50" stroke="#29444D"/>
+  <g transform="translate(170 35)" fill="none" stroke="#EBFBF9" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 30L14 2l14 28M6 20h16"/>
+    <path d="M64 12v8a10 10 0 0 1-10 10h-5a10 10 0 0 1-10-10v-8A10 10 0 0 1 49 2h5a10 10 0 0 1 10 10ZM55 22l10 10"/>
+    <path d="M77 2v18a10 10 0 0 0 10 10h4a10 10 0 0 0 10-10V2"/>
+    <path d="M113 30l14-28 14 28m-22-10h16"/>
+    <g stroke="#70EFCE">
+      <path d="M153 2v28h18"/>
+      <path d="M208 12v8a10 10 0 0 1-10 10h-5a10 10 0 0 1-10-10v-8a10 10 0 0 1 10-10h5a10 10 0 0 1 10 10Z"/>
+      <path d="M244 2h-14a10 10 0 0 0-10 10v8a10 10 0 0 0 10 10h14V16h-10"/>
+    </g>
+  </g>
+  <path d="M172 79h54" stroke="#5AEFD3" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="233" cy="79" r="1.5" fill="#5AEFD3"/>
+</svg>
+
