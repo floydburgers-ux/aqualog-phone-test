@@ -153,18 +153,36 @@ function localDateTime() {
   return new Date(now.getTime() - offset).toISOString().slice(0, 16);
 }
 
-function showPage(page) {
+function showPage(page, options = {}) {
+  const allowedPages = new Set(["dashboard", "metingen", "voeding", "instellingen"]);
+  if (!allowedPages.has(page)) page = "dashboard";
+
   document.querySelectorAll(".page").forEach(element => {
     element.classList.remove("active");
   });
 
   document.getElementById(page).classList.add("active");
+  const backButton = document.getElementById("backHomeButton");
+  backButton.hidden = page === "dashboard";
 
-  if (page === "geschiedenis") renderHistory();
-  if (page === "onderhoud") renderMaintenance();
+  if (!options.fromPopState) {
+    const state = { aqualog: true, page };
+    if (page === "dashboard") {
+      history.replaceState(state, "", location.href);
+    } else {
+      history.pushState(state, "", location.href);
+    }
+  }
+
+  if (page === "metingen") renderHistory();
   if (page === "dashboard") renderDashboard();
   if (page === "voeding") renderDosing();
 }
+
+window.addEventListener("popstate", () => {
+  showPage("dashboard", { fromPopState: true });
+  history.replaceState({ aqualog: true, page: "dashboard" }, "", location.href);
+});
 
 document.getElementById("measurementForm").addEventListener("submit", async event => {
   event.preventDefault();
@@ -190,7 +208,6 @@ document.getElementById("measurementForm").addEventListener("submit", async even
     await renderHistory();
 
     alert("Je watermeting is opgeslagen!");
-    showPage("dashboard");
   } catch (error) {
     alert("Opslaan mislukt: " + error.message);
   }
@@ -372,57 +389,6 @@ async function renderHistory() {
   }
 }
 
-document.getElementById("maintenanceForm").addEventListener("submit", async event => {
-  event.preventDefault();
-
-  const record = {
-    date: document.getElementById("maintenanceDate").value,
-    type: document.getElementById("maintenanceType").value,
-    notes: document.getElementById("maintenanceNotes").value.trim()
-  };
-
-  try {
-    await saveRecord("maintenance", record);
-    event.target.reset();
-    document.getElementById("maintenanceDate").value =
-      localDateTime().slice(0, 10);
-
-    await renderMaintenance();
-    alert("Onderhoud opgeslagen!");
-  } catch (error) {
-    alert("Opslaan mislukt: " + error.message);
-  }
-});
-
-async function renderMaintenance() {
-  const records = await getAll("maintenance");
-  records.sort((a, b) => b.date.localeCompare(a.date));
-
-  const container = document.getElementById("maintenanceHistory");
-  container.replaceChildren();
-
-  for (const record of records) {
-    const entry = document.createElement("article");
-    entry.className = "entry";
-
-    const heading = document.createElement("h3");
-    heading.textContent = record.type;
-    entry.appendChild(heading);
-
-    const date = document.createElement("p");
-    date.textContent = record.date;
-    entry.appendChild(date);
-
-    if (record.notes) {
-      const note = document.createElement("p");
-      note.textContent = record.notes;
-      entry.appendChild(note);
-    }
-
-    container.appendChild(entry);
-  }
-}
-
 async function saveSettings() {
   const settings = {
     tankName: document.getElementById("tankName").value,
@@ -540,7 +506,6 @@ async function importData() {
     await loadSettings();
     await renderDashboard();
     await renderHistory();
-    await renderMaintenance();
     await renderDosing();
 
     alert("Back-up succesvol teruggezet!");
@@ -629,7 +594,6 @@ async function syncWithRaspberry() {
     await loadSettings();
     await renderDashboard();
     await renderHistory();
-    await renderMaintenance();
     await renderDosing();
     const count = ["measurements", "maintenance", "doses"].reduce((sum, name) => sum + (snapshot.entities?.[name]?.length || 0), 0);
     setSyncStatus(`Gesynchroniseerd · ${count} aquariumregistraties · ${new Date().toLocaleString("nl-NL")}`);
@@ -688,14 +652,15 @@ async function initialize() {
     await openDatabase();
 
     document.getElementById("date").value = localDateTime();
-    document.getElementById("maintenanceDate").value =
-      localDateTime().slice(0, 10);
+
+    if (!history.state?.aqualog) {
+      history.replaceState({ aqualog: true, page: "dashboard" }, "", location.href);
+    }
 
     await loadSettings();
     await loadSyncSettings();
     await renderDashboard();
     await renderHistory();
-    await renderMaintenance();
     document.getElementById("doseDate").value = localDateTime();
     document.getElementById("doseAmount").value = await numberSetting("microDose", 17);
     await renderDosing();
@@ -709,155 +674,4 @@ async function initialize() {
 
 initialize();
 
-const chartNames = {
-  ph: "pH",
-  temperature: "Temperatuur",
-  kh: "KH",
-  gh: "GH",
-  no2: "NO2",
-  no3: "NO3",
-  po4: "PO4",
-  nh: "NH3/NH4",
-  k: "Kalium",
-  fe: "IJzer",
-  tds: "TDS",
-  ec: "EC"
-};
-
-async function renderChart() {
-  const canvas = document.getElementById("waterChart");
-  if (!canvas || !db) return;
-
-  const ctx = canvas.getContext("2d");
-  const parameter = document.getElementById("chartParameter").value;
-  const period = document.getElementById("chartPeriod").value;
-
-  let records = await getAll("measurements");
-
-  if (period !== "all") {
-    const cutoff = Date.now() - Number(period) * 86400000;
-    records = records.filter(r => new Date(r.date).getTime() >= cutoff);
-  }
-
-  records = records
-    .filter(r => r.values[parameter] !== null &&
-                 r.values[parameter] !== undefined &&
-                 Number.isFinite(r.values[parameter]))
-    .sort((a, b) => a.date.localeCompare(b.date));
-
-  const info = document.getElementById("chartInfo");
-  const rect = canvas.getBoundingClientRect();
-  const width = Math.max(280, rect.width);
-  const height = Math.max(200, rect.height);
-  const ratio = window.devicePixelRatio || 1;
-
-  canvas.width = width * ratio;
-  canvas.height = height * ratio;
-  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-
-  ctx.clearRect(0, 0, width, height);
-
-  if (!records.length) {
-    info.textContent = "Geen metingen beschikbaar voor deze periode.";
-    return;
-  }
-
-  const values = records.map(r => r.values[parameter]);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const padding = { left: 42, right: 15, top: 20, bottom: 35 };
-
-  const plotWidth = width - padding.left - padding.right;
-  const plotHeight = height - padding.top - padding.bottom;
-
-  const range = max - min || Math.max(Math.abs(max) * 0.1, 1);
-  const low = min - range * 0.15;
-  const high = max + range * 0.15;
-
-  ctx.font = "11px Arial";
-  ctx.textAlign = "right";
-  ctx.fillStyle = "#91aaa8";
-  ctx.strokeStyle = "#29454b";
-  ctx.lineWidth = 1;
-
-  for (let i = 0; i <= 4; i++) {
-    const y = padding.top + plotHeight * i / 4;
-    const value = high - (high - low) * i / 4;
-
-    ctx.beginPath();
-    ctx.moveTo(padding.left, y);
-    ctx.lineTo(width - padding.right, y);
-    ctx.stroke();
-
-    ctx.fillText(value.toFixed(2), padding.left - 6, y + 4);
-  }
-
-  const points = records.map((record, index) => ({
-    x: padding.left + (records.length === 1 ? plotWidth / 2 :
-      plotWidth * index / (records.length - 1)),
-    y: padding.top + plotHeight -
-      ((record.values[parameter] - low) / (high - low)) * plotHeight
-  }));
-
-  if (points.length > 1) {
-    ctx.beginPath();
-    ctx.strokeStyle = "#36c4b2";
-    ctx.lineWidth = 2.5;
-    ctx.lineJoin = "round";
-
-    points.forEach((point, index) => {
-      if (index === 0) ctx.moveTo(point.x, point.y);
-      else ctx.lineTo(point.x, point.y);
-    });
-
-    ctx.stroke();
-  }
-
-  points.forEach(point => {
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
-    ctx.fillStyle = "#36c4b2";
-    ctx.fill();
-  });
-
-  ctx.textAlign = "center";
-  ctx.fillStyle = "#91aaa8";
-
-  const firstDate = new Date(records[0].date);
-  const lastDate = new Date(records[records.length - 1].date);
-
-  ctx.fillText(firstDate.toLocaleDateString("nl-NL"),
-    padding.left, height - 10);
-
-  if (records.length > 1) {
-    ctx.fillText(lastDate.toLocaleDateString("nl-NL"),
-      width - padding.right, height - 10);
-  }
-
-  info.textContent =
-    records.length + " metingen | Minimum: " + min +
-    " | Maximum: " + max + " | Laatste: " + values.at(-1);
-}
-
-document.getElementById("chartParameter")
-  .addEventListener("change", renderChart);
-
-document.getElementById("chartPeriod")
-  .addEventListener("change", renderChart);
-
-window.addEventListener("resize", () => {
-  if (document.getElementById("grafieken").classList.contains("active")) {
-    renderChart();
-  }
-});
-
-const originalShowPage = showPage;
-
-showPage = function(page) {
-  originalShowPage(page);
-
-  if (page === "grafieken") {
-    renderChart();
-  }
-};
 
