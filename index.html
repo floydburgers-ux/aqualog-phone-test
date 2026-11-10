@@ -7,21 +7,21 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-4" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-4">
-  <link rel="stylesheet" href="style.css?v=20261110-4">
+  <link rel="icon" href="icon.svg?v=20261110-5" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261110-5">
+  <link rel="stylesheet" href="style.css?v=20261110-5">
 </head>
 <body>
   <header>
-    <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>←</button>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-4" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-5" alt="FB AquaLog">
+    <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
   <main>
     <section id="dashboard" class="page active">
       <div class="dashboard-heading">
         <div class="dashboard-title-block">
-          <img class="dashboard-fish-mark" src="./FB-AquaLog-beeldmerk.svg?v=20261110-4" alt="">
+          <img class="dashboard-fish-mark" src="./FB-AquaLog-beeldmerk.svg?v=20261110-5" alt="">
           <div>
             <p class="eyebrow">AQUALOG · AQUARIUM OVERZICHT</p>
             <h2 id="dashboardTitle">Mijn aquarium</h2>
@@ -243,11 +243,11 @@
     <button onclick="showPage('instellingen')">⚙<small>Instellingen</small></button>
   </nav>
 
-  <script src="app.js?v=20261110-4"></script>
+  <script src="app.js?v=20261110-5"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-4")
+      navigator.serviceWorker.register("./sw.js?v=20261110-5")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });
