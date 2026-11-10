@@ -133,6 +133,9 @@ nav button {
   background: transparent;
   font-size: 17px;
 }
+.nav-icon { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-icon circle { fill: #080c17; }
+.nav-leaf { stroke: #64ddb6; }
 nav button small { font-size: 9px; font-weight: 500; }
 nav button:hover, nav button:focus-visible { color: var(--accent); background: rgba(54, 199, 255, .07); }
 
