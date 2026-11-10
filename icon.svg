@@ -1,13 +1,13 @@
-
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="110" fill="#102d35"/>
-  <path d="M80 270 Q170 180 256 270 T432 270" fill="none"
-        stroke="#36c4b2" stroke-width="22" stroke-linecap="round"/>
-  <path d="M256 140 C205 205 160 255 160 315
-           A96 96 0 0 0 352 315 C352 255 307 205 256 140Z"
-        fill="#36c4b2"/>
-  <circle cx="290" cy="292" r="9" fill="#102d35"/>
-  <path d="M170 390 Q256 350 342 390" fill="none"
-        stroke="#eff8f6" stroke-width="13" stroke-linecap="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="124" height="112" viewBox="0 0 124 112" role="img" aria-label="FB AquaLog"><rect width="124" height="112" rx="25" fill="#09151D"/><defs>
+    <linearGradient id="fin" x1="17" y1="79" x2="98" y2="26" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#55B9FF"/>
+      <stop offset=".62" stop-color="#5AEFD3"/>
+      <stop offset="1" stop-color="#BBFF9D"/>
+    </linearGradient>
+  </defs><g transform="translate(7 0)">
+    <path d="M9 37l23 12 14-18h23c17 0 31 10 41 25-10 15-24 25-41 25H46L32 63 9 75l6-19Z" fill="url(#fin)"/>
+    <path d="M36 69l15-30h24l-4 7H56l-3.5 7H64l-3.5 7H49l-8 16Z" fill="#09151D"/>
+    <path d="M75 43h7c7 0 10 3 10 7 0 3-2 5-5 6 3 1 4 3 4 6 0 5-5 9-12 9H61l4-8h14c3 0 4-1 4-3 0-1-1-2-3-2H68l4-7h9c2 0 3-1 3-2s-1-2-3-2h-8Z" fill="#09151D"/>
+    <circle cx="99" cy="54" r="2.4" fill="#09151D"/>
+  </g></svg>
 
