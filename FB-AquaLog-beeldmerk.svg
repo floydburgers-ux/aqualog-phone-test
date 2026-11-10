@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="124" height="112" viewBox="0 0 124 112" role="img" aria-label="FB AquaLog"><defs>
+    <linearGradient id="fin" x1="17" y1="79" x2="98" y2="26" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#55B9FF"/>
+      <stop offset=".62" stop-color="#5AEFD3"/>
+      <stop offset="1" stop-color="#BBFF9D"/>
+    </linearGradient>
+  </defs><g transform="translate(7 0)">
+    <path d="M9 37l23 12 14-18h23c17 0 31 10 41 25-10 15-24 25-41 25H46L32 63 9 75l6-19Z" fill="url(#fin)"/>
+    <path d="M36 69l15-30h24l-4 7H56l-3.5 7H64l-3.5 7H49l-8 16Z" fill="#09151D"/>
+    <path d="M75 43h7c7 0 10 3 10 7 0 3-2 5-5 6 3 1 4 3 4 6 0 5-5 9-12 9H61l4-8h14c3 0 4-1 4-3 0-1-1-2-3-2H68l4-7h9c2 0 3-1 3-2s-1-2-3-2h-8Z" fill="#09151D"/>
+    <circle cx="99" cy="54" r="2.4" fill="#09151D"/>
+  </g></svg>
+
