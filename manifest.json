@@ -4,7 +4,7 @@
   "short_name": "AquaLog",
   "description": "Mijn persoonlijke offline aquariumlogboek",
   "lang": "nl-NL",
-  "start_url": "./index.html?v=20261110-4",
+  "start_url": "./index.html?v=20261110-5",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -12,7 +12,7 @@
   "theme_color": "#102d35",
   "icons": [
     {
-      "src": "./icon.svg?v=20261110-4",
+      "src": "./icon.svg?v=20261110-5",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
