@@ -7,13 +7,13 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-7" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-7">
-  <link rel="stylesheet" href="style.css?v=20261110-7">
+  <link rel="icon" href="icon.svg?v=20261110-8" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261110-8">
+  <link rel="stylesheet" href="style.css?v=20261110-8">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-7" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-8" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
@@ -229,28 +229,28 @@
 
   <nav>
     <button onclick="showPage('dashboard')" aria-label="Home">
-      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 10 8.5-7 8.5 7"/><path d="M5.5 9v11h13V9M8 17c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0"/></svg>
+      <span class="nav-emoji" aria-hidden="true">🏠</span>
       <small>Home</small>
     </button>
     <button onclick="showPage('metingen')" aria-label="Meten">
-      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v5l-4 9.2A2 2 0 0 0 7.8 20h8.4a2 2 0 0 0 1.8-2.8L14 8V3"/><path d="M8 15h8M10 12h1.5M13 12h1"/></svg>
+      <span class="nav-emoji" aria-hidden="true">🧪</span>
       <small>Meten</small>
     </button>
     <button onclick="showPage('voeding')" aria-label="Voeding">
-      <svg class="nav-icon nav-leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5C12 3 5 6 4 12.5c-.6 3.4 1.7 6 4.8 6.1 6.4.2 10.9-6.7 11.7-15.1Z"/><path d="M3.5 21c3.4-5 7-8.5 12-11.5"/></svg>
+      <span class="nav-emoji" aria-hidden="true">🌿</span>
       <small>Voeding</small>
     </button>
     <button onclick="showPage('instellingen')" aria-label="Instellingen">
-      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg>
+      <span class="nav-emoji" aria-hidden="true">🎚️</span>
       <small>Instellingen</small>
     </button>
   </nav>
 
-  <script src="app.js?v=20261110-7"></script>
+  <script src="app.js?v=20261110-8"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-7")
+      navigator.serviceWorker.register("./sw.js?v=20261110-8")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });
