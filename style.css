@@ -28,18 +28,16 @@ body {
 
 header {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: 0;
+  display: block !important;
+  width: 100vw !important;
+  max-width: none !important;
   padding: 0;
   background: rgba(7, 11, 22, .92);
   border-bottom: 1px solid var(--border);
 }
 
-.brand-logo { display: block; width: 100%; max-width: none; height: auto; }
-.back-home { align-self: flex-start; margin: 9px 16px 0; }
+.brand-logo { display: block; width: 100vw !important; max-width: none !important; height: auto; }
+.back-home:not([hidden]) { display: flex; margin: 9px 16px 0; }
 .back-home[hidden] { display: none; }
 
 main { width: min(100%, 1500px); margin: 0 auto; padding: 22px 16px 30px; }
