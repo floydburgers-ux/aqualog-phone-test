@@ -526,10 +526,19 @@ function setSyncStatus(message) {
   const status = document.getElementById("syncStatus");
   const indicator = document.getElementById("syncIndicator");
   if (status) status.textContent = message;
-  if (indicator) indicator.textContent = message.startsWith("Gesynchroniseerd") ? "● Pi bijgewerkt" :
-    message.startsWith("Lokaal bewaard") ? "● Lokaal bewaard · Pi wacht" :
-    message.startsWith("Niet verbonden") || message.startsWith("Synchronisatie mislukt") ? "● Lokaal · Pi niet bereikbaar" :
-    message.startsWith("Verbonden") ? "● Pi verbonden" : "● " + message;
+  if (!indicator) return;
+
+  const indicatorText = document.getElementById("syncIndicatorText");
+  const isWarning = message.startsWith("Lokaal bewaard") || message.startsWith("Niet verbonden") || message.startsWith("Synchronisatie mislukt");
+  const isPi = message.startsWith("Gesynchroniseerd") || message.startsWith("Verbonden");
+  const label = message.startsWith("Gesynchroniseerd") ? "Raspberry Pi bijgewerkt" :
+    message.startsWith("Lokaal bewaard") ? "Lokaal opgeslagen · Pi wacht" :
+    message.startsWith("Niet verbonden") || message.startsWith("Synchronisatie mislukt") ? "Lokaal opgeslagen · Pi niet bereikbaar" :
+    message.startsWith("Verbonden") ? "Raspberry Pi verbonden" : message;
+
+  if (indicatorText) indicatorText.textContent = label;
+  indicator.classList.toggle("is-warning", isWarning);
+  indicator.classList.toggle("is-pi", isPi);
 }
 
 function schedulePiSync() {
