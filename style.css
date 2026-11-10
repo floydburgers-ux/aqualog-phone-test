@@ -29,18 +29,18 @@ body {
 header {
   position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   justify-content: center;
-  gap: 16px;
-  min-height: 88px;
-  padding: 10px 58px;
+  gap: 0;
+  padding: 0;
   background: rgba(7, 11, 22, .92);
   border-bottom: 1px solid var(--border);
 }
 
-.brand-logo { display: block; width: min(207px, 62vw); height: auto; }
-.back-home { position: absolute; left: 14px; top: 50%; width: 38px; height: 38px; padding: 0; border-radius: 50%; font-size: 21px; line-height: 1; transform: translateY(-50%); }
-.back-home:active { transform: translateY(calc(-50% + 1px)); }
+.brand-logo { display: block; width: 100%; max-width: none; height: auto; }
+.back-home { align-self: flex-start; margin: 9px 16px 0; }
+.back-home[hidden] { display: none; }
 
 main { width: min(100%, 1500px); margin: 0 auto; padding: 22px 16px 30px; }
 h2 { margin: 3px 0 7px; font-size: 22px; letter-spacing: -.3px; }
@@ -154,7 +154,7 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
 
 @media (min-width: 960px) {
   body { padding: 0 0 0 78px; }
-  header { padding: 18px 30px; }
+  header { padding: 0; }
   main { padding: 28px 30px 48px; }
   .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   nav {
