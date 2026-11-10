@@ -27,31 +27,20 @@ body {
 }
 
 header {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
-  padding: 17px 20px;
+  min-height: 88px;
+  padding: 10px 58px;
   background: rgba(7, 11, 22, .92);
   border-bottom: 1px solid var(--border);
 }
 
-header .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
-header .brand > div { min-width: 0; }
-.back-home { width: 38px; height: 38px; flex: 0 0 38px; padding: 0; border-radius: 50%; font-size: 21px; line-height: 1; }
-header h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
-header h1 span { font-size: 18px; }
-header p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
-
-.status {
-  padding: 7px 10px;
-  border: 1px solid rgba(97, 230, 164, .2);
-  border-radius: 999px;
-  background: rgba(36, 117, 87, .14);
-  color: var(--success);
-  font-size: 10px;
-  white-space: nowrap;
-}
+.brand-logo { display: block; width: min(207px, 62vw); height: auto; }
+.back-home { position: absolute; left: 14px; top: 50%; width: 38px; height: 38px; padding: 0; border-radius: 50%; font-size: 21px; line-height: 1; transform: translateY(-50%); }
+.back-home:active { transform: translateY(calc(-50% + 1px)); }
 
 main { width: min(100%, 1500px); margin: 0 auto; padding: 22px 16px 30px; }
 h2 { margin: 3px 0 7px; font-size: 22px; letter-spacing: -.3px; }
@@ -193,10 +182,16 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
 
 /* Dashboard artwork and summary panels */
 .dashboard-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-bottom: 19px; }
+.dashboard-title-block { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.dashboard-fish-mark { width: 48px; height: 48px; flex: 0 0 48px; padding: 4px; border: 1px solid var(--border); border-radius: 12px; background: #09151d; }
 .dashboard-heading h2 { font-size: clamp(24px, 4vw, 32px); }
 .eyebrow { margin: 0 0 7px; color: #8595b2; font-size: 9px; font-weight: 750; letter-spacing: 1.35px; }
 .live-pill { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 5px; padding: 8px 10px; border: 1px solid rgba(97,230,164,.16); border-radius: 999px; color: #a9c8bd; background: rgba(30,95,73,.12); font-size: 10px; white-space: nowrap; }
 .live-pill i { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px rgba(97,230,164,.8); }
+.live-pill.is-warning { border-color: rgba(255,183,77,.28); color: #ffd08a; background: rgba(110,71,20,.15); }
+.live-pill.is-warning i { background: #ffb74d; box-shadow: 0 0 10px rgba(255,183,77,.6); }
+.live-pill.is-pi { border-color: rgba(72,216,255,.25); color: #a8eaff; background: rgba(25,94,153,.14); }
+.live-pill.is-pi i { background: #48d8ff; box-shadow: 0 0 10px rgba(72,216,255,.7); }
 .metric { position: relative; overflow: hidden; padding: 15px; }
 .metric::after { position: absolute; right: -24px; bottom: -45px; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(54,199,255,.1), transparent 70%); content: ""; pointer-events: none; }
 .metric small { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; }
