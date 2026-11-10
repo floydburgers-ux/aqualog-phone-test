@@ -7,13 +7,13 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-8" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-8">
-  <link rel="stylesheet" href="style.css?v=20261110-8">
+  <link rel="icon" href="icon.svg?v=20261110-9" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261110-9">
+  <link rel="stylesheet" href="style.css?v=20261110-9">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-8" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-9" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
@@ -23,26 +23,36 @@
         <div id="syncIndicator" class="live-pill"><i></i><span id="syncIndicatorText">Lokaal opgeslagen</span></div>
       </div>
 
-      <div class="cards">
-        <article class="metric">
-          <small><span class="metric-icon cyan">◉</span> Temperatuur</small>
-          <strong id="temperature">-- °C</strong>
-          <span class="metric-caption">Laatste meting</span>
-        </article>
-        <article class="metric">
+      <div class="cards home-metrics">
+        <article class="metric metric-ph">
           <small><span class="metric-icon violet">◌</span> pH</small>
           <strong id="ph">--</strong>
           <span class="metric-caption">Zuurgraad</span>
         </article>
-        <article class="metric">
+        <article class="metric metric-temperature">
+          <small><span class="metric-icon cyan">◉</span> Temperatuur</small>
+          <strong id="temperature">-- °C</strong>
+          <span class="metric-caption">Laatste meting</span>
+        </article>
+        <article class="metric metric-kh">
           <small><span class="metric-icon blue">⌁</span> KH</small>
           <strong id="kh">-- °dKH</strong>
           <span class="metric-caption">Carbonaathardheid</span>
         </article>
-        <article class="metric">
+        <article class="metric metric-gh">
+          <small><span class="metric-icon green">⌁</span> GH</small>
+          <strong id="gh">-- °dGH</strong>
+          <span class="metric-caption">Totale hardheid</span>
+        </article>
+        <article class="metric metric-no3">
           <small><span class="metric-icon pink">✧</span> NO3</small>
           <strong id="no3">-- ppm</strong>
           <span class="metric-caption">Nitraat</span>
+        </article>
+        <article class="metric metric-po4">
+          <small><span class="metric-icon violet">✧</span> PO4</small>
+          <strong id="po4">-- ppm</strong>
+          <span class="metric-caption">Fosfaat</span>
         </article>
       </div>
 
@@ -246,11 +256,11 @@
     </button>
   </nav>
 
-  <script src="app.js?v=20261110-8"></script>
+  <script src="app.js?v=20261110-9"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-8")
+      navigator.serviceWorker.register("./sw.js?v=20261110-9")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });

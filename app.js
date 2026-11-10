@@ -234,19 +234,23 @@ async function renderDashboard() {
   };
 
   if (!latest) {
-    display("temperature", null, "°C");
     display("ph", null);
+    display("temperature", null, "°C");
     display("kh", null, "°dKH");
+    display("gh", null, "°dGH");
     display("no3", null, "ppm");
+    display("po4", null, "ppm");
     return;
   }
 
   const v = latest.values;
 
-  display("temperature", v.temperature, "°C");
   display("ph", v.ph);
+  display("temperature", v.temperature, "°C");
   display("kh", v.kh, "°dKH");
+  display("gh", v.gh, "°dGH");
   display("no3", v.no3, "ppm");
+  display("po4", v.po4, "ppm");
 }
 
 function numberSetting(key, fallback) {

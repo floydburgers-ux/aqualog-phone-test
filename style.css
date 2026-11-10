@@ -54,10 +54,15 @@ h3 { margin: 0 0 12px; font-size: 14px; }
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin: 20px 0;
 }
+.home-metrics .metric { min-height: 103px; padding: 12px 9px; }
+.home-metrics .metric small { display: flex; align-items: center; gap: 4px; min-height: 20px; margin-bottom: 8px; font-size: clamp(8px, 2.5vw, 10px); white-space: nowrap; }
+.home-metrics .metric-icon { width: 18px; height: 18px; flex: 0 0 18px; font-size: 11px; }
+.home-metrics .metric strong { font-size: clamp(15px, 4.3vw, 22px); white-space: nowrap; }
+.home-metrics .metric-caption { margin-top: 5px; font-size: 8px; white-space: nowrap; }
 
 .metric, .panel, .entry {
   border: 1px solid var(--border);
@@ -69,8 +74,8 @@ h3 { margin: 0 0 12px; font-size: 14px; }
 .metric { min-width: 0; padding: 14px; }
 .metric small { display: block; margin-bottom: 10px; color: var(--muted); font-size: 11px; }
 .metric strong { color: var(--text); font-size: clamp(19px, 5vw, 26px); font-weight: 650; }
-.metric:nth-child(3) strong { color: var(--accent); }
-.metric:nth-child(4) strong { color: var(--purple); }
+.metric-kh strong { color: var(--accent); }
+.metric-no3 strong { color: var(--purple); }
 
 .panel { margin: 14px 0; padding: 16px; }
 button {
@@ -146,8 +151,7 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
 @media (min-width: 620px) {
   body { padding-bottom: 92px; }
   main { padding: 30px 26px 40px; }
-  .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
-  .metric { padding: 18px; }
+  .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
   .panel { padding: 20px; }
 }
 
@@ -155,7 +159,7 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
   body { padding: 0 0 0 78px; }
   header { padding: 0; }
   main { padding: 28px 30px 48px; }
-  .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cards { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   nav {
     top: 0;
     right: auto;
@@ -276,7 +280,7 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
 @media (max-width: 440px) {
   main { padding: 18px 12px 26px; }
   .cards { gap: 8px; margin: 15px 0; }
-  .metric { min-height: 103px; padding: 12px 11px; }
+  .home-metrics .metric { min-height: 103px; padding: 12px 8px; }
   .dashboard-heading { gap: 8px; }
   .dashboard-heading { align-items: flex-start; }
   .live-pill { margin-top: 2px; padding: 7px; font-size: 8px; }
@@ -288,7 +292,7 @@ nav button:hover, nav button:focus-visible { color: var(--accent); background: r
   .routine-card, .quick-panel, .readiness-panel { padding: 15px; }
   nav button { min-height: 47px; }
   nav button small { font-size: 9px; }
-  .metric small { font-size: 10px; }
+  .home-metrics .metric small { font-size: 9px; }
   .metric-caption { font-size: 8px; }
 }
 @media (max-width: 360px) {

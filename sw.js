@@ -1,17 +1,17 @@
 
-const CACHE_NAME = "aqualog-v12";
+const CACHE_NAME = "aqualog-v13";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./index.html?v=20261110-8",
-  "./style.css?v=20261110-8",
-  "./app.js?v=20261110-8",
-  "./manifest.json?v=20261110-8",
-  "./icon.svg?v=20261110-8",
-  "./FB-AquaLog-v2.svg?v=20261110-8",
-  "./FB-AquaLog-beeldmerk.svg?v=20261110-8",
-  "./aquarium-photo.jpg?v=20261110-8"
+  "./index.html?v=20261110-9",
+  "./style.css?v=20261110-9",
+  "./app.js?v=20261110-9",
+  "./manifest.json?v=20261110-9",
+  "./icon.svg?v=20261110-9",
+  "./FB-AquaLog-v2.svg?v=20261110-9",
+  "./FB-AquaLog-beeldmerk.svg?v=20261110-9",
+  "./aquarium-photo.jpg?v=20261110-9"
 ];
 
 self.addEventListener("install", event => {
