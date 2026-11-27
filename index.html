@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261127-2" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261127-2">
+  <link rel="icon" href="icon.svg?v=20261127-3" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261127-3">
   <link rel="stylesheet" href="style.css?v=20261127-2">
 </head>
 <body>
@@ -236,7 +236,7 @@
 
       <div class="panel photo-settings">
         <h3>Aquariumfoto</h3>
-        <p class="muted">Kies de foto die bovenaan Home wordt getoond. Voortgangsfoto's bewaar je in het Fotoalbum.</p>
+        <p class="muted">De nieuwste foto uit het Fotoalbum verschijnt op Home. Deze aquariumfoto wordt alleen getoond zolang het album leeg is.</p>
         <img id="tankPhotoPreview" class="tank-photo-preview" src="./aquarium-photo.jpg?v=20261110-6" alt="Voorbeeld van de aquariumfoto">
         <label for="tankPhotoFile">Nieuwe foto kiezen
           <input id="tankPhotoFile" type="file" accept="image/*">
@@ -294,11 +294,11 @@
     </button>
   </nav>
 
-  <script src="app.js?v=20261127-2"></script>
+  <script src="app.js?v=20261127-3"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261127-2")
+      navigator.serviceWorker.register("./sw.js?v=20261127-3")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });
