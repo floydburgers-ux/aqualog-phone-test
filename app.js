@@ -1,6 +1,6 @@
 
 const DB_NAME = "AquaLogDatabase";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 let db;
 let syncTimer = null;
 let syncInFlight = false;
@@ -80,6 +80,12 @@ function openDatabase() {
         const store = database.createObjectStore("doses", { keyPath: "id", autoIncrement: true });
         store.createIndex("date", "date");
         store.createIndex("product", "product");
+      }
+
+      if (!database.objectStoreNames.contains("photos")) {
+        const store = database.createObjectStore("photos", { keyPath: "id", autoIncrement: true });
+        store.createIndex("date", "date");
+        store.createIndex("syncId", "syncId", { unique: true });
       }
     };
 
@@ -264,7 +270,7 @@ async function refreshAutomaticDoses() {
 }
 
 function showPage(page, options = {}) {
-  const allowedPages = new Set(["dashboard", "metingen", "voeding", "instellingen"]);
+  const allowedPages = new Set(["dashboard", "metingen", "voeding", "fotoalbum", "instellingen"]);
   if (!allowedPages.has(page)) page = "dashboard";
 
   document.querySelectorAll(".page").forEach(element => {
@@ -287,11 +293,31 @@ function showPage(page, options = {}) {
   if (page === "metingen") renderHistory();
   if (page === "dashboard") renderDashboard();
   if (page === "voeding") renderDosing();
+  if (page === "fotoalbum") renderPhotoAlbum();
 }
 
 window.addEventListener("popstate", () => {
   showPage("dashboard", { fromPopState: true });
   history.replaceState({ aqualog: true, page: "dashboard" }, "", location.href);
+});
+
+document.getElementById("albumPhotoFiles").addEventListener("change", async event => {
+  const input = event.currentTarget;
+  const files = Array.from(input.files || []).filter(file => file.type.startsWith("image/"));
+  input.value = "";
+  if (!files.length) return;
+  const status = document.getElementById("albumStatus");
+  status.textContent = "Foto's voorbereiden…";
+  try {
+    for (const file of files) {
+      const data = await compressTankPhoto(file);
+      await saveRecord("photos", { date: new Date().toISOString(), note: "", data, deletedAt: null });
+    }
+    await renderPhotoAlbum();
+    status.textContent = files.length === 1 ? "Foto opgeslagen op dit apparaat." : `${files.length} foto's opgeslagen op dit apparaat.`;
+  } catch (error) {
+    status.textContent = "Een foto kon niet worden opgeslagen: " + error.message;
+  }
 });
 
 document.getElementById("measurementForm").addEventListener("submit", async event => {
@@ -696,6 +722,65 @@ async function saveTankPhoto() {
   }
 }
 
+async function renderPhotoAlbum() {
+  const container = document.getElementById("photoAlbum");
+  if (!container) return;
+  const photos = (await getAll("photos"))
+    .filter(photo => !photo.deletedAt)
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  container.replaceChildren();
+  if (!photos.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "Nog geen foto's toegevoegd. Kies Foto toevoegen om te beginnen.";
+    container.appendChild(empty);
+    return;
+  }
+  for (const photo of photos) {
+    const card = document.createElement("article");
+    card.className = "album-photo";
+    const image = document.createElement("img");
+    image.src = photo.data;
+    image.alt = "Aquariumfoto van " + new Date(photo.date).toLocaleDateString("nl-NL");
+    image.loading = "lazy";
+    card.appendChild(image);
+    const info = document.createElement("div");
+    info.className = "album-photo-info";
+    const date = document.createElement("time");
+    date.dateTime = photo.date;
+    date.textContent = new Date(photo.date).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+    info.appendChild(date);
+    const sync = document.createElement("p");
+    sync.textContent = photo.deletedAt ? "Verwijderd" : photo.piSyncedAt ? "Ook op de Raspberry Pi" : "Wacht op synchronisatie";
+    info.appendChild(sync);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "Foto verwijderen";
+    remove.addEventListener("click", () => deleteAlbumPhoto(photo));
+    info.appendChild(remove);
+    card.appendChild(info);
+    container.appendChild(card);
+  }
+}
+
+async function deleteAlbumPhoto(photo) {
+  if (!confirm("Deze foto uit het album verwijderen?")) return;
+  const updated = { ...photo, deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  await putRecord("photos", updated);
+  await renderPhotoAlbum();
+  schedulePiSync();
+}
+
+function putRecord(storeName, record) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, "readwrite");
+    transaction.objectStore(storeName).put(record);
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error);
+  });
+}
+
 async function exportData() {
   const data = {
     app: "AquaLog",
@@ -704,11 +789,12 @@ async function exportData() {
     schemaVersion: 2,
     exportedAt: new Date().toISOString(),
     storage: { engine: "IndexedDB", database: DB_NAME, localOnly: true },
-    migration: { entities: ["measurements", "maintenance", "doses", "settings"], idStrategy: "local-auto-increment; preserve exported ids" },
+    migration: { entities: ["measurements", "maintenance", "doses", "settings", "photos"], idStrategy: "local-auto-increment; preserve exported ids" },
     measurements: await getAll("measurements"),
     maintenance: await getAll("maintenance"),
     doses: await getAll("doses"),
-    settings: (await getAll("settings")).filter(item => !DEVICE_ONLY_SETTINGS.has(item.key))
+    settings: (await getAll("settings")).filter(item => !DEVICE_ONLY_SETTINGS.has(item.key)),
+    photos: await getAll("photos")
   };
 
   const blob = new Blob(
@@ -745,11 +831,11 @@ async function importData() {
     }
 
     const transaction = db.transaction(
-      ["measurements", "maintenance", "doses", "settings"],
+      ["measurements", "maintenance", "doses", "settings", "photos"],
       "readwrite"
     );
 
-    for (const name of ["measurements", "maintenance", "doses", "settings"]) {
+    for (const name of ["measurements", "maintenance", "doses", "settings", "photos"]) {
       transaction.objectStore(name).clear();
     }
 
@@ -766,6 +852,7 @@ async function importData() {
     for (const record of data.settings) {
       transaction.objectStore("settings").put(record);
     }
+    for (const record of (data.photos || [])) transaction.objectStore("photos").put(record);
 
     await new Promise((resolve, reject) => {
       transaction.oncomplete = resolve;
@@ -781,6 +868,7 @@ async function importData() {
     await renderDashboard();
     await renderHistory();
     await renderDosing();
+    await renderPhotoAlbum();
 
     alert("Back-up succesvol teruggezet!");
     input.value = "";
@@ -838,6 +926,74 @@ async function raspberryRequest(path, options = {}) {
   return body;
 }
 
+async function raspberryPhotoRequest(path, options = {}) {
+  const baseUrl = (await getSetting("syncApiUrl") || "").replace(/\/+$/, "");
+  const token = await getSetting("syncToken") || "";
+  if (!baseUrl || !token) throw new Error("Stel eerst de Raspberry Pi-verbinding in.");
+  const response = await fetch(baseUrl + path, {
+    ...options,
+    headers: { ...(options.body ? { "Content-Type": "application/json" } : {}), "Authorization": "Bearer " + token, ...(options.headers || {}) }
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.error || `Fotoverbinding mislukt (HTTP ${response.status}).`);
+  }
+  return response;
+}
+
+async function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error || new Error("Foto kon niet worden geladen."));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function syncPhotoAlbumWithPi() {
+  const response = await raspberryPhotoRequest("/api/photos");
+  const remotePhotos = await response.json();
+  const remoteById = new Map((remotePhotos.photos || []).map(photo => [photo.syncId, photo]));
+  let localPhotos = await getAll("photos");
+
+  for (const photo of localPhotos) {
+    const remote = remoteById.get(photo.syncId);
+    if (photo.deletedAt) {
+      if (remote && !remote.deletedAt) await raspberryPhotoRequest("/api/photos/" + encodeURIComponent(photo.syncId), { method: "DELETE" });
+      continue;
+    }
+    if (!remote || (!remote.deletedAt && String(photo.updatedAt || "") > String(remote.updatedAt || ""))) {
+      await raspberryPhotoRequest("/api/photos/" + encodeURIComponent(photo.syncId), {
+        method: "PUT",
+        body: JSON.stringify({ syncId: photo.syncId, date: photo.date, updatedAt: photo.updatedAt, data: photo.data })
+      });
+      photo.piSyncedAt = new Date().toISOString();
+      await putRecord("photos", photo);
+    } else if (remote.deletedAt) {
+      photo.deletedAt = remote.deletedAt;
+      await putRecord("photos", photo);
+    } else if (String(remote.updatedAt || "") > String(photo.updatedAt || "")) {
+      const imageResponse = await raspberryPhotoRequest("/api/photos/" + encodeURIComponent(photo.syncId) + "/file");
+      photo.data = await blobToDataUrl(await imageResponse.blob());
+      photo.date = remote.date;
+      photo.updatedAt = remote.updatedAt;
+      photo.deletedAt = null;
+      photo.piSyncedAt = new Date().toISOString();
+      await putRecord("photos", photo);
+    }
+  }
+
+  localPhotos = await getAll("photos");
+  const localIds = new Set(localPhotos.map(photo => photo.syncId));
+  for (const remote of remotePhotos.photos || []) {
+    if (localIds.has(remote.syncId) || remote.deletedAt) continue;
+    const imageResponse = await raspberryPhotoRequest("/api/photos/" + encodeURIComponent(remote.syncId) + "/file");
+    const data = await blobToDataUrl(await imageResponse.blob());
+    await saveRecord("photos", { syncId: remote.syncId, date: remote.date, updatedAt: remote.updatedAt, deletedAt: null, piSyncedAt: new Date().toISOString(), data });
+  }
+  await renderPhotoAlbum();
+}
+
 async function testRaspberryConnection() {
   setSyncStatus("Verbinding testen…");
   try {
@@ -854,6 +1010,7 @@ async function syncWithRaspberry() {
     return;
   }
   syncInFlight = true;
+  let photoSyncMessage = "";
   setSyncStatus("Lokale gegevens voorbereiden…");
   try {
     await syncSettingsFromForm();
@@ -874,6 +1031,14 @@ async function syncWithRaspberry() {
       })
     });
     await mergeRemoteSnapshot(snapshot.entities || {});
+    try {
+      await syncPhotoAlbumWithPi();
+      document.getElementById("albumStatus").textContent = "Foto's bijgewerkt op dit apparaat en de Raspberry Pi.";
+    } catch (photoError) {
+      photoSyncMessage = " · Fotoalbum wacht op Pi-update/verbinding";
+      document.getElementById("albumStatus").textContent = "Foto's staan lokaal. Synchronisatie met de Pi volgt zodra de fotoalbumfunctie daarop is bijgewerkt.";
+      console.warn("Fotoalbum synchroniseren is nog niet mogelijk:", photoError);
+    }
     await loadSettings();
     await loadTankPhoto();
     await processAutomaticDoses();
@@ -881,7 +1046,7 @@ async function syncWithRaspberry() {
     await renderHistory();
     await renderDosing();
     const count = ["measurements", "maintenance", "doses"].reduce((sum, name) => sum + (snapshot.entities?.[name]?.length || 0), 0);
-    setSyncStatus(`Gesynchroniseerd · ${count} aquariumregistraties · ${new Date().toLocaleString("nl-NL")}`);
+    setSyncStatus(`Gesynchroniseerd · ${count} aquariumregistraties · ${new Date().toLocaleString("nl-NL")}${photoSyncMessage}`);
   } catch (error) { setSyncStatus("Synchronisatie mislukt: " + error.message); }
   finally { syncInFlight = false; }
 }
@@ -937,6 +1102,7 @@ setInterval(refreshAutomaticDoses, 60000);
 async function initialize() {
   try {
     await openDatabase();
+    if (navigator.storage?.persist) await navigator.storage.persist().catch(() => false);
 
     document.getElementById("date").value = localDateTime();
 
@@ -953,6 +1119,7 @@ async function initialize() {
     document.getElementById("doseDate").value = localDateTime();
     document.getElementById("doseAmount").value = await numberSetting("microDose", 17);
     await renderDosing();
+    await renderPhotoAlbum();
     if (await getSetting("syncApiUrl")) schedulePiSync();
 
     console.log("AquaLog database gestart.");
