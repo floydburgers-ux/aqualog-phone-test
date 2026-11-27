@@ -7,13 +7,13 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261110-13" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261110-13">
-  <link rel="stylesheet" href="style.css?v=20261110-13">
+  <link rel="icon" href="icon.svg?v=20261127-1" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261127-1">
+  <link rel="stylesheet" href="style.css?v=20261127-1">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261110-13" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261127-1" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
@@ -28,7 +28,7 @@
         <article class="metric metric-ph">
           <small><span class="metric-icon violet">◌</span> pH</small>
           <strong id="ph">--</strong>
-          <span class="metric-caption">Zuurgraad</span>
+          <span class="metric-caption" title="Geschat uit de meest recente pH- en KH-meting">CO₂ ≈ <span id="co2Estimate">--</span> mg/L</span>
         </article>
         <article class="metric metric-temperature">
           <small><span class="metric-icon cyan">◉</span> Temperatuur</small>
@@ -149,7 +149,7 @@
 
     <section id="metingen" class="page">
       <h2>Waterwaardes meten</h2>
-      <p class="muted">Vul je gemeten waterwaardes in.</p>
+      <p class="muted">Vul je gemeten waterwaardes in. Home schat CO₂ automatisch uit de meest recente pH- en KH-meting.</p>
 
       <form id="measurementForm">
         <label>Datum en tijd</label>
@@ -180,17 +180,8 @@
           <label>NH3/NH4 (ppm)
             <input type="number" step="0.01" id="mNh">
           </label>
-          <label>Kalium (ppm)
-            <input type="number" step="0.1" id="mK">
-          </label>
-          <label>IJzer (ppm)
+          <label>IJzer (Fe, ppm)
             <input type="number" step="0.01" id="mFe">
-          </label>
-          <label>TDS (ppm)
-            <input type="number" step="1" id="mTds">
-          </label>
-          <label>EC (µS/cm)
-            <input type="number" step="1" id="mEc">
           </label>
         </div>
 
@@ -289,11 +280,11 @@
     </button>
   </nav>
 
-  <script src="app.js?v=20261110-13"></script>
+  <script src="app.js?v=20261127-1"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261110-13")
+      navigator.serviceWorker.register("./sw.js?v=20261127-1")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });

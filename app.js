@@ -44,10 +44,7 @@ const measurementFields = {
   no3: "mNo3",
   po4: "mPo4",
   nh: "mNh",
-  k: "mK",
-  fe: "mFe",
-  tds: "mTds",
-  ec: "mEc"
+  fe: "mFe"
 };
 
 function openDatabase() {
@@ -353,6 +350,7 @@ async function renderDashboard() {
     display("gh", null, "°dGH");
     display("no3", null, "ppm");
     display("po4", null, "ppm");
+    document.getElementById("co2Estimate").textContent = "--";
     updateHomeWarnings(homeStockWarnings);
     return;
   }
@@ -365,6 +363,7 @@ async function renderDashboard() {
   display("gh", v.gh, "°dGH");
   display("no3", v.no3, "ppm");
   display("po4", v.po4, "ppm");
+  updateCo2Estimate(v);
 
   const warnings = [...homeStockWarnings];
   const maxPh = await numberSetting("maxPh", 6.9);
@@ -375,6 +374,18 @@ async function renderDashboard() {
     warnings.push({ text: `pH te hoog · ${measuredLabel} (max. ${maxLabel})`, level: "danger" });
   }
   updateHomeWarnings(warnings);
+}
+
+function updateCo2Estimate(values) {
+  const element = document.getElementById("co2Estimate");
+  const ph = Number(values?.ph);
+  const kh = Number(values?.kh);
+  if (values?.ph === null || values?.ph === undefined || values?.kh === null || values?.kh === undefined || !Number.isFinite(ph) || !Number.isFinite(kh) || kh < 0) {
+    element.textContent = "--";
+    return;
+  }
+  const co2 = 3 * kh * Math.pow(10, 7 - ph);
+  element.textContent = Number.isFinite(co2) ? Math.round(co2).toLocaleString("nl-NL") : "--";
 }
 
 function numberSetting(key, fallback) {
