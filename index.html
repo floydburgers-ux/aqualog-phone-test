@@ -7,13 +7,13 @@
   <meta name="theme-color" content="#102d35">
   <meta name="description" content="Persoonlijk offline aquariumlogboek">
   <title>AquaLog</title>
-  <link rel="icon" href="icon.svg?v=20261127-1" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json?v=20261127-1">
-  <link rel="stylesheet" href="style.css?v=20261127-1">
+  <link rel="icon" href="icon.svg?v=20261127-2" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json?v=20261127-2">
+  <link rel="stylesheet" href="style.css?v=20261127-2">
 </head>
 <body>
   <header>
-    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261127-1" alt="FB AquaLog">
+    <img class="brand-logo" src="./FB-AquaLog-v2.svg?v=20261127-2" alt="FB AquaLog">
     <button id="backHomeButton" class="back-home" type="button" aria-label="Terug naar home" onclick="showPage('dashboard')" hidden>← Home</button>
   </header>
 
@@ -198,6 +198,16 @@
       </div>
     </section>
 
+    <section id="fotoalbum" class="page">
+      <div class="album-heading">
+        <div><h2>Fotoalbum</h2><p class="muted">Volg de groei en veranderingen van je aquarium.</p></div>
+        <button type="button" onclick="document.getElementById('albumPhotoFiles').click()">＋ Foto toevoegen</button>
+      </div>
+      <input id="albumPhotoFiles" type="file" accept="image/*" multiple hidden>
+      <p id="albumStatus" class="muted" role="status" aria-live="polite"></p>
+      <div id="photoAlbum" class="photo-album"><p class="muted">Nog geen foto's toegevoegd.</p></div>
+    </section>
+
     <section id="instellingen" class="page">
       <h2>Instellingen</h2>
       <div class="panel">
@@ -226,7 +236,7 @@
 
       <div class="panel photo-settings">
         <h3>Aquariumfoto</h3>
-        <p class="muted">Kies een nieuwe foto om de huidige op dit apparaat te vervangen. De foto wordt niet naar de Raspberry Pi gestuurd.</p>
+        <p class="muted">Kies de foto die bovenaan Home wordt getoond. Voortgangsfoto's bewaar je in het Fotoalbum.</p>
         <img id="tankPhotoPreview" class="tank-photo-preview" src="./aquarium-photo.jpg?v=20261110-6" alt="Voorbeeld van de aquariumfoto">
         <label for="tankPhotoFile">Nieuwe foto kiezen
           <input id="tankPhotoFile" type="file" accept="image/*">
@@ -274,17 +284,21 @@
       <span class="nav-emoji" aria-hidden="true">🌿</span>
       <small>Voeding</small>
     </button>
+    <button onclick="showPage('fotoalbum')" aria-label="Fotoalbum">
+      <span class="nav-emoji" aria-hidden="true">📷</span>
+      <small>Foto's</small>
+    </button>
     <button onclick="showPage('instellingen')" aria-label="Instellingen">
       <span class="nav-emoji" aria-hidden="true">🎚️</span>
       <small>Instellingen</small>
     </button>
   </nav>
 
-  <script src="app.js?v=20261127-1"></script>
+  <script src="app.js?v=20261127-2"></script>
   <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js?v=20261127-1")
+      navigator.serviceWorker.register("./sw.js?v=20261127-2")
         .then(() => console.log("AquaLog offline actief"))
         .catch(error => console.error("Offline installatie mislukt:", error));
     });
