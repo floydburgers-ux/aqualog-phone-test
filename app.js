@@ -313,6 +313,7 @@ document.getElementById("albumPhotoFiles").addEventListener("change", async even
       const data = await compressTankPhoto(file);
       await saveRecord("photos", { date: new Date().toISOString(), note: "", data, deletedAt: null });
     }
+    await loadTankPhoto();
     await renderPhotoAlbum();
     status.textContent = files.length === 1 ? "Foto opgeslagen op dit apparaat." : `${files.length} foto's opgeslagen op dit apparaat.`;
   } catch (error) {
@@ -659,9 +660,12 @@ async function setDosingMode(product, mode) {
 
 async function loadTankPhoto() {
   const savedPhoto = await getSetting("tankPhoto");
-  const photoUrl = savedPhoto || "./aquarium-photo.jpg?v=20261110-6";
-  document.getElementById("tankPhotoHome").src = photoUrl;
-  document.getElementById("tankPhotoPreview").src = photoUrl;
+  const albumPhotos = (await getAll("photos"))
+    .filter(photo => !photo.deletedAt)
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  const defaultPhoto = savedPhoto || "./aquarium-photo.jpg?v=20261110-6";
+  document.getElementById("tankPhotoHome").src = albumPhotos[0]?.data || defaultPhoto;
+  document.getElementById("tankPhotoPreview").src = defaultPhoto;
 }
 
 function compressTankPhoto(file) {
@@ -767,6 +771,7 @@ async function deleteAlbumPhoto(photo) {
   if (!confirm("Deze foto uit het album verwijderen?")) return;
   const updated = { ...photo, deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
   await putRecord("photos", updated);
+  await loadTankPhoto();
   await renderPhotoAlbum();
   schedulePiSync();
 }
